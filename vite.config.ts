@@ -8,7 +8,7 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   const isProduction = mode === 'production';
   return {
-    base: '/pf-krafton/',
+    base: '/pf-epid/',
     plugins: [
       react(), 
       tailwindcss(),

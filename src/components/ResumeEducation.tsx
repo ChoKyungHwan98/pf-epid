@@ -29,9 +29,9 @@ export const ResumeEducation = ({ data, setData, isEditing }: ResumeEducationPro
                   <EditableText value={edu.period} onSave={(v) => { const e = [...data.education]; e[idx].period = v; setData({...data, education: e}); }} isEditing={isEditing} />
                 </span>
               </div>
-              <p className="text-[12.5px] text-[#333333] leading-relaxed font-medium">
+              <div className="text-[12.5px] text-[#333333] leading-relaxed font-medium">
                 <EditableText value={edu.description} onSave={(v) => { const e = [...data.education]; e[idx].description = v; setData({...data, education: e}); }} isEditing={isEditing} markdown={true} />
-              </p>
+              </div>
               {edu.details && (
                 <ul className="flex flex-col gap-1 mt-2.5">
                   {edu.details.map((detail, dIdx) => (

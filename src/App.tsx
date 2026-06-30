@@ -1,86 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { About } from './components/About';
-import { Projects } from './components/Projects';
+import React, { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { AnimeHistoryView } from './components/AnimeHistoryView';
+import { DashboardGameHistoryView } from './components/DashboardGameHistoryView';
+import { DashboardHome } from './components/DashboardHome';
+import { DashboardShell } from './components/DashboardShell';
+import type { DashboardView } from './components/DashboardShell';
 import { Portfolio } from './components/Portfolio';
-import { Skills } from './components/Skills';
-import { PlayHistory } from './components/PlayHistory';
 import { Resume } from './components/Resume';
-import { Contact } from './components/Contact';
-import { Footer } from './components/Footer';
-import { RightRail } from './components/RightRail';
-import { ProjectDetail } from './components/ProjectDetail';
-import { GameHistoryView } from './components/GameHistoryView';
-import { BackgroundEffects } from './components/BackgroundEffects';
-import { motion } from 'motion/react';
-
+import { MobileApp } from './components/mobile/MobileApp';
 import { useEditableContent } from './hooks/useEditableContent';
 import { useIsMobile } from './hooks/useIsMobile';
-import { MobileApp } from './components/mobile/MobileApp';
-import { RESUME_DATA, PROJECTS, GAME_HISTORY, SKILLS } from './data';
-import type { Project } from './types';
+import { PROJECTS, RESUME_DATA } from './data';
 
-type ViewType = 'home' | 'resume' | 'project-detail' | 'portfolio' | 'all-projects' | 'game-history' | 'cover-letter';
+const normalizeView = (value: string | null): DashboardView => {
+  if (value === 'resume' || value === 'cover-letter') return 'resume';
+  if (value === 'portfolio') return 'portfolio';
+  if (value === 'game-history' || value === 'play') return 'game-history';
+  if (value === 'anime-history' || value === 'anime') return 'anime-history';
+  return 'home';
+};
 
 function App() {
-  const [view, setView] = useState<ViewType>(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const viewParam = params.get('view') as ViewType;
-      const validViews: ViewType[] = ['home', 'resume', 'project-detail', 'portfolio', 'all-projects', 'game-history', 'cover-letter'];
-      if (validViews.includes(viewParam)) {
-        return viewParam;
-      }
-    }
-    return 'home';
+  const [view, setView] = useState<DashboardView>(() => {
+    if (typeof window === 'undefined') return 'home';
+    const params = new URLSearchParams(window.location.search);
+    return normalizeView(params.get('view'));
+  });
+  const [resumeTab, setResumeTab] = useState<'resume' | 'cover-letter'>(() => {
+    if (typeof window === 'undefined') return 'resume';
+    const params = new URLSearchParams(window.location.search);
+    return params.get('view') === 'cover-letter' ? 'cover-letter' : 'resume';
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [activeSection, setActiveSection] = useState('about');
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [targetProjectId, setTargetProjectId] = useState<number | null>(null);
-  const [resumeTab, setResumeTab] = useState<'resume' | 'cover-letter'>('resume');
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
-  const handleSetResumeTab = (tab: 'resume' | 'cover-letter') => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setResumeTab(tab);
-  };
-
-  // Supabase Data
   const [resumeData, setResumeData, resumeLoaded] = useEditableContent(RESUME_DATA, 'webzen_resume_data');
   const [projectsData, setProjectsData, projectsLoaded] = useEditableContent(PROJECTS, 'webzen_portfolio_projects_v2');
-  const [gameHistory, setGameHistory, gameHistoryLoaded] = useEditableContent(GAME_HISTORY, 'webzen_game_history');
-  const [skillsData, setSkillsData] = useState(SKILLS);
-  const [heroContent, setHeroContent, heroLoaded] = useEditableContent({
-    titleLine1: "기획의도를 알고",
-    titleLine2: "목차를 쓸줄 아는 기획자",
-    description: "법학의 치밀한 논리 구조를 게임 기획에 적용합니다.\n기획 의도가 흔들리지 않는 튼튼한 뼈대를 설계하여,\n다양한 변수 속에서도 본연의 재미가 유지되는 환경을 만듭니다."
-  }, 'webzen_hero_content');
-  const [aboutContent, setAboutContent, aboutLoaded] = useEditableContent({
-    p1: "법학이 '-에서 0으로 되돌리는 일'이었다면,<br/>게임은 누군가의 하루를 <strong>'0에서 +가 되는 경험'</strong>으로 만드는 일입니다.<br/>탄탄한 시스템의 논리적 뼈대 위에서,<br/>유저의 마음에 즐거움이라는 <strong>감성을 채워넣는 것</strong> —<br/>그것이 제가 생각하는 게임 기획의 본질입니다.",
-    p2: "저는 누군가의 하루를 움직이는,<br/><strong>+를 설계하는 기획자</strong>가 되겠습니다."
-  }, 'webzen_about_content');
 
-  const isDataLoaded = resumeLoaded && projectsLoaded && gameHistoryLoaded && heroLoaded && aboutLoaded;
   const isMobile = useIsMobile();
+  const isDataLoaded = resumeLoaded && projectsLoaded;
 
-  // Section Observer
-  useEffect(() => {
-    if (view !== 'home') return;
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) setActiveSection(entry.target.id);
-      });
-    }, { threshold: 0.3 });
-    ['hero', 'about', 'projects', 'skills', 'play-history', 'contact'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-    return () => observer.disconnect();
-  }, [view, isDataLoaded]);
-
-  // Force scroll to top on initial load (prevent browser from remembering scroll position on refresh)
   useEffect(() => {
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
@@ -88,227 +47,121 @@ function App() {
     window.scrollTo(0, 0);
   }, []);
 
-  // 보안: F12, 우클릭, 각종 개발자 도구 단축키 차단
-  useEffect(() => {
-    const handleContextMenu = (e: MouseEvent) => {
-      e.preventDefault();
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // F12
-      if (e.keyCode === 123) {
-        e.preventDefault();
-      }
-      // Ctrl+Shift+I or Cmd+Option+I (개발자 도구)
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 73) {
-        e.preventDefault();
-      }
-      // Ctrl+Shift+J or Cmd+Option+J (콘솔)
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 74) {
-        e.preventDefault();
-      }
-      // Ctrl+U or Cmd+U (소스 보기)
-      if ((e.ctrlKey || e.metaKey) && e.keyCode === 85) {
-        e.preventDefault();
-      }
-    };
-
-    document.addEventListener('contextmenu', handleContextMenu);
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('contextmenu', handleContextMenu);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
-  const [returnScrollY, setReturnScrollY] = useState<number>(0);
-
-  const changeView = (newView: ViewType) => {
-    const isResumeTransition = 
-      (view === 'resume' || view === 'cover-letter') && 
-      (newView === 'resume' || newView === 'cover-letter');
-
-    if (view === 'home' && newView !== 'home') {
-      setReturnScrollY(window.scrollY);
-    }
-    
-    // Update URL without reloading the page
-    if (newView === 'home') {
-      window.history.pushState({ view: newView }, '', window.location.pathname);
-    } else {
-      window.history.pushState({ view: newView }, '', `?view=${newView}`);
-    }
-
-    setView(newView);
-    if (newView === 'cover-letter') setResumeTab('cover-letter');
-    if (newView === 'resume') setResumeTab('resume');
-
-    // 사용자 요청: 이력서 <-> 자기소개서 전환 시에만 위로 스크롤
-    if (isResumeTransition) {
-      window.scrollTo(0, 0);
-    } else if (newView !== 'home' && newView !== 'resume' && newView !== 'cover-letter') {
-      // 그 외 포트폴리오, 게임 이력 등으로 갈 때는 기본적으로 최상단으로 이동 (필요 시 유지)
-      window.scrollTo(0, 0);
-    }
-  };
-
-  // 브라우저 뒤로가기(popstate) 이벤트 대응
   useEffect(() => {
     const handlePopState = () => {
       const params = new URLSearchParams(window.location.search);
-      const viewParam = params.get('view') as ViewType;
-      const validViews: ViewType[] = ['home', 'resume', 'project-detail', 'portfolio', 'all-projects', 'game-history', 'cover-letter'];
-      setView(validViews.includes(viewParam) ? viewParam : 'home');
+      const nextView = normalizeView(params.get('view'));
+      setView(nextView);
+      setResumeTab(params.get('view') === 'cover-letter' ? 'cover-letter' : 'resume');
     };
-
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const handleNavClick = (id: string) => {
-    changeView('home');
-    setTimeout(() => {
-      if (id === 'hero-top') { window.scrollTo({ top: 0, behavior: 'smooth' }); setActiveSection(''); return; }
-      const element = document.getElementById(id);
-      if (element) { element.scrollIntoView({ behavior: 'smooth' }); setActiveSection(id); }
-    }, 100);
+  const changeView = (nextView: DashboardView) => {
+    setView(nextView);
+    if (nextView !== 'resume') setResumeTab('resume');
+    const url = nextView === 'home' ? window.location.pathname : `?view=${nextView}`;
+    window.history.pushState({ view: nextView }, '', url);
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
-  const handleBack = () => {
-    if (view === 'resume' || view === 'cover-letter') setResumeTab('resume');
-    if (view === 'portfolio') setTargetProjectId(null);
-    if (view === 'project-detail') {
-      changeView('portfolio');
-      return;
-    }
-    
-    setView('home');
-    setTimeout(() => {
-      window.scrollTo({ top: returnScrollY, behavior: 'instant' });
-    }, 10);
+  const changeResumeTab = (tab: 'resume' | 'cover-letter') => {
+    setResumeTab(tab);
+    if (view !== 'resume') setView('resume');
+    const url = tab === 'cover-letter' ? '?view=cover-letter' : '?view=resume';
+    window.history.pushState({ view: 'resume', tab }, '', url);
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
-  // ── Navbar Slots ──────────────────────────────────────────────
-
-  // centerSlot
-  const centerSlot = (() => {
-    if (view === 'resume' || view === 'cover-letter') {
-      return (
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex bg-zinc-100/80 backdrop-blur-md p-1 rounded-full border border-black/5 shadow-inner">
-          {(['resume', 'cover-letter'] as const).map((tab) => (
-            <button key={tab} onClick={() => handleSetResumeTab(tab)}
-              className={`relative px-6 py-1.5 rounded-full text-[13px] font-bold transition-all tracking-tight flex items-center justify-center w-[100px] ${resumeTab === tab ? 'text-[#0047BB]' : 'text-zinc-500 hover:text-[#1A1A1A]'}`}>
-              {resumeTab === tab && (
-                <motion.div layoutId="resumeTabBadge" className="absolute inset-0 bg-white rounded-full shadow-sm border border-black/5" transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }} />
-              )}
-              <span className="relative z-10">{tab === 'resume' ? '이력서' : '자기소개서'}</span>
-            </button>
-          ))}
-        </div>
-      );
-    }
-    return undefined;
-  })();
-
-  // rightActionSlot은 Navbar 내부에서 모든 화면에 동일하게 보이도록 직접 렌더링되므로 속성을 넘기지 않음
+  const triggerPdfDownload = () => {
+    setIsGeneratingPdf(true);
+    window.dispatchEvent(new Event('triggerPdfDownload'));
+    window.setTimeout(() => setIsGeneratingPdf(false), 500);
+  };
 
   if (!isDataLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FDFDFB]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#0047BB]/20 border-t-[#0047BB] rounded-full animate-spin"></div>
-          <p className="text-zinc-500 font-medium font-mono text-sm tracking-widest uppercase">데이터를 불러오는 중...</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#15171b]">
+        <div className="dashboard-loading">
+          <div />
+          <p>데이터를 불러오는 중...</p>
         </div>
       </div>
     );
   }
 
-  // 모바일 기기 → MobileApp 렌더링 (PC 코드 완전 보존)
   if (isMobile) return <MobileApp />;
 
   return (
-    <>
-    <div className="min-h-screen font-sans selection:bg-[#0047BB]/20 text-[#2C2C2C] bg-transparent">
-      <BackgroundEffects />
-      <Navbar
-        setView={changeView}
-        currentView={view}
-        onNavClick={handleNavClick}
-        isEditing={isEditing}
-        setIsEditing={setIsEditing}
-        activeSection={activeSection}
-        onBack={view !== 'home' ? handleBack : undefined}
-        centerSlot={centerSlot}
-        isGeneratingPdf={isGeneratingPdf}
-      />
-      <RightRail view={view} onNavClick={handleNavClick} activeSection={activeSection} />
+    <DashboardShell
+      currentView={view}
+      onViewChange={changeView}
+      resumeTab={resumeTab}
+      setResumeTab={changeResumeTab}
+      onPdfDownload={triggerPdfDownload}
+    >
+      <AnimatePresence initial={false}>
+        {view === 'home' && <DashboardHome key="home" onViewChange={changeView} />}
 
-      {view === 'home' && (
-        <main className="relative">
-          <Hero onPortfolioClick={() => changeView('portfolio')} onResumeClick={() => changeView('resume')} isEditing={isEditing} content={heroContent} setContent={setHeroContent} aboutContent={aboutContent} setAboutContent={setAboutContent} />
-          <About isEditing={isEditing} content={aboutContent} setContent={setAboutContent} />
-          <Projects onProjectClick={(p) => { setTargetProjectId(p.id); changeView('portfolio'); }} isEditing={isEditing} projects={projectsData} setProjects={setProjectsData} limit={3} setView={changeView} />
-          <Skills isEditing={isEditing} skills={skillsData} setSkills={setSkillsData} />
-          <PlayHistory isEditing={isEditing} history={gameHistory} setHistory={setGameHistory} onViewAll={() => changeView('game-history')} />
-          <Contact />
-        </main>
-      )}
+        {view === 'resume' && (
+          <Resume
+            key="resume"
+            setView={(next) => {
+              if (next === 'cover-letter') changeResumeTab('cover-letter');
+              else changeView(normalizeView(String(next)));
+            }}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+            data={resumeData}
+            setData={setResumeData}
+            onBack={() => changeView('home')}
+            activeTab={resumeTab}
+            setActiveTab={changeResumeTab}
+            isGeneratingPdf={isGeneratingPdf}
+            setIsGeneratingPdf={setIsGeneratingPdf}
+          />
+        )}
 
-      {(view === 'resume' || view === 'cover-letter') && (
-        <Resume
-          setView={changeView}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
-          data={resumeData}
-          setData={setResumeData}
-          onBack={handleBack}
-          activeTab={resumeTab}
-          setActiveTab={handleSetResumeTab}
-          isGeneratingPdf={isGeneratingPdf}
-          setIsGeneratingPdf={setIsGeneratingPdf}
-        />
-      )}
-      {view === 'project-detail' && selectedProject && (
-        <ProjectDetail
-          project={selectedProject}
-          isEditing={isEditing}
-          onBack={handleBack}
-          onSaveContent={(c) => {
-            const updated = [...projectsData];
-            const index = updated.findIndex(p => p.id === selectedProject.id);
-            if (index !== -1) {
-              updated[index].content = c;
-              setProjectsData(updated);
-              setSelectedProject(updated[index]);
-            }
-          }}
-        />
-      )}
-      {view === 'portfolio' && (
-        <Portfolio
-          onProjectClick={(p) => { setSelectedProject(p); changeView('project-detail'); }}
-          isEditing={isEditing}
-          projects={projectsData}
-          setProjects={setProjectsData}
-          setView={changeView}
-          onBack={handleBack}
-          initialProjectId={targetProjectId}
-        />
-      )}
-      {view === 'game-history' && (
-        <GameHistoryView
-          onBack={handleBack}
-          history={gameHistory}
-          setHistory={setGameHistory}
-          isEditing={isEditing}
-        />
-      )}
+        {view === 'portfolio' && (
+          <Portfolio
+            key="portfolio"
+            onProjectClick={() => undefined}
+            isEditing={isEditing}
+            projects={projectsData}
+            setProjects={setProjectsData}
+            setView={changeView}
+            onBack={() => changeView('home')}
+          />
+        )}
 
-      <Footer />
-    </div>
+        {view === 'game-history' && (
+          <motion.div
+            key="game-history"
+            className="dashboard-page-motion dashboard-view-game-history"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <DashboardGameHistoryView />
+          </motion.div>
+        )}
 
-    </>
+        {view === 'anime-history' && (
+          <motion.div
+            key="anime-history"
+            className="dashboard-page-motion dashboard-view-anime-history"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <AnimeHistoryView />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </DashboardShell>
   );
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, X, MousePointer2 } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 import { EditableText } from './EditableText';
 import type { Project } from '../types';
 
@@ -67,7 +67,7 @@ export const ProjectCard = ({ project, idx, isEditing, projects, setProjects, on
   return (
     <motion.div 
       onClick={() => onProjectClick(project)}
-      className="group relative bg-white border border-zinc-100 rounded-4xl overflow-hidden hover:border-[#0047BB]/20 hover:shadow-[0_40px_80px_-24px_rgba(0,71,187,0.15)] hover:-translate-y-1.5 transition-all duration-700 flex flex-col h-full cursor-pointer"
+      className="portfolio-project-card group relative overflow-hidden transition-all duration-300 flex flex-col h-full cursor-pointer"
     >
       {isEditing && (
         <button onClick={(e) => { e.stopPropagation(); if (confirm("삭제하시겠습니까?")) { setProjects(projects.filter(p => p.id !== project.id)); }}}
@@ -76,48 +76,44 @@ export const ProjectCard = ({ project, idx, isEditing, projects, setProjects, on
         </button>
       )}
       
-      <div className="overflow-hidden relative bg-zinc-900 shrink-0 aspect-[16/9]">
-        <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 absolute inset-0 grayscale-[30%] opacity-85 group-hover:grayscale-0 group-hover:opacity-100" referrerPolicy="no-referrer" />
-        <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-20" />
+      <div className="portfolio-project-media overflow-hidden relative shrink-0 aspect-[16/9]">
+        <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 absolute inset-0 opacity-90 group-hover:opacity-100" referrerPolicy="no-referrer" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/45 to-transparent opacity-60 transition-opacity duration-300 z-20" />
 
       </div>
 
-      <div className="flex-1 flex flex-col p-6 lg:p-8">
+      <div className="portfolio-project-body flex-1 flex flex-col">
 
         {/* Status — most prominent element */}
         {project.status && (
-          <div className={`inline-flex items-center gap-2 self-start px-4 py-2 rounded-full text-[12px] font-black tracking-wide mb-4 ${
+          <div className={`portfolio-project-status ${
             project.status === '미출시'
-              ? 'bg-zinc-100 text-zinc-500 border border-zinc-200'
+              ? 'is-muted'
               : project.status === '프로토타입'
-              ? 'bg-violet-50 text-violet-600 border border-violet-200'
-              : 'bg-[#0047BB] text-white shadow-md shadow-[#0047BB]/25'
+              ? 'is-prototype'
+              : 'is-live'
           }`}>
-            {project.status !== '미출시' && project.status !== '프로토타입' && (
-              <span className="text-[13px] leading-none">🏆</span>
-            )}
-            {project.status === '프로토타입' && <span className="text-[13px] leading-none">⚡</span>}
             <EditableText value={project.status} onSave={(v) => { const p = [...projects]; p[idx].status = v; setProjects(p); }} isEditing={isEditing} />
           </div>
         )}
 
 
-        <h3 className="text-[22px] font-display font-black tracking-tight text-zinc-900 group-hover:text-[#0047BB] transition-colors leading-[1.2] mb-4">
+        <h3 className="portfolio-project-title">
           <EditableText value={project.title} onSave={(v) => { const p = [...projects]; p[idx].title = v; setProjects(p); }} isEditing={isEditing} />
         </h3>
 
         {/* Description */}
-        <div className="text-zinc-600 text-[14px] leading-[1.7] mb-5 font-medium">
+        <div className="portfolio-project-desc">
           <EditableText value={project.description} onSave={(v) => { const p = [...projects]; p[idx].description = v; setProjects(p); }} isEditing={isEditing} multiline markdown={true} />
         </div>
 
         {/* Key Tasks */}
         {project.keyTasks && project.keyTasks.length > 0 && (
-          <div className="mb-5 pb-5 border-b border-zinc-100">
-            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2">주요 작업</p>
-            <div className="flex flex-wrap gap-1.5">
+          <div className="portfolio-project-tasks">
+            <p>주요 작업</p>
+            <div>
               {project.keyTasks.map((task, i) => (
-                <span key={i} className="text-[12px] font-semibold px-3 py-1.5 bg-[#0047BB]/6 border border-[#0047BB]/12 rounded-lg text-[#0047BB]/75 group-hover:bg-[#0047BB]/12 group-hover:text-[#0047BB] transition-all">
+                <span key={i}>
                   {task}
                 </span>
               ))}
@@ -126,15 +122,15 @@ export const ProjectCard = ({ project, idx, isEditing, projects, setProjects, on
         )}
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 pb-5">
+        <div className="portfolio-project-tags">
           {project.tags.map((tag, tagIdx) => (
-            <span key={tagIdx} className="text-[10px] font-bold px-2.5 py-1 bg-zinc-50 border border-zinc-200 rounded-md text-zinc-500 uppercase tracking-wide">
+            <span key={tagIdx}>
               {tag}
             </span>
           ))}
         </div>
 
-        <div className="mt-auto pt-4 border-t border-zinc-100 flex items-center justify-between text-[#0047BB] font-bold text-[13px] opacity-70 group-hover:opacity-100 transition-opacity">
+        <div className="portfolio-project-footer">
           <span>상세 보기</span>
           <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
         </div>

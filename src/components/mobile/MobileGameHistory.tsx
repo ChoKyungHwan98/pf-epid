@@ -121,7 +121,7 @@ export const MobileGameHistory = () => {
         borderBottom: '1px solid rgba(0,0,0,0.07)',
         padding: '14px 20px 14px',
       }}>
-        <span style={{ display: 'block', fontSize: 9, fontWeight: 900, letterSpacing: '0.38em', color: '#0047BB', textTransform: 'uppercase', marginBottom: 3 }}>Gaming DNA</span>
+        <span style={{ display: 'block', fontSize: 9, fontWeight: 900, letterSpacing: '0.38em', color: '#0047BB', textTransform: 'uppercase', marginBottom: 3 }}>Game Play History</span>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1A2332', letterSpacing: '-0.03em', lineHeight: 1 }}>플레이 이력</h2>
       </div>
 
@@ -177,7 +177,7 @@ export const MobileGameHistory = () => {
           </div>
 
           {/* SVG 레이더 차트 (DNA) */}
-          <span style={{ display: 'block', fontSize: 9, fontWeight: 900, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.38em', marginBottom: 12 }}>장르별 숙련도 — DNA</span>
+          <span style={{ display: 'block', fontSize: 9, fontWeight: 900, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.38em', marginBottom: 12 }}>장르별 숙련도</span>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <svg width={svgSize} height={svgSize} style={{ overflow: 'visible' }}>
               {/* 배경 폴리곤 */}

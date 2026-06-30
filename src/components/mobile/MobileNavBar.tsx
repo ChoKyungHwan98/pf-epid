@@ -13,7 +13,7 @@ const TABS: { id: MobileTab; label: string; icon: React.ReactNode }[] = [
   { id: 'home',         label: '홈',     icon: <Home        strokeWidth={1.8} className="w-[22px] h-[22px]" /> },
   { id: 'portfolio',    label: 'Works',  icon: <FolderOpen  strokeWidth={1.8} className="w-[22px] h-[22px]" /> },
   { id: 'resume',       label: '이력서', icon: <FileText    strokeWidth={1.8} className="w-[22px] h-[22px]" /> },
-  { id: 'game-history', label: '게이밍DNA', icon: <Gamepad2   strokeWidth={1.8} className="w-[22px] h-[22px]" /> },
+  { id: 'game-history', label: '플레이이력', icon: <Gamepad2   strokeWidth={1.8} className="w-[22px] h-[22px]" /> },
   { id: 'more',         label: '더보기', icon: <MoreHorizontal strokeWidth={1.8} className="w-[22px] h-[22px]" /> },
 ];
 

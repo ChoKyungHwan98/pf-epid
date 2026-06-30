@@ -40,10 +40,10 @@ export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterPr
   }, [data.selfIntroductions]);
 
   return (
-    <div className="w-full relative">
+    <div className="cover-letter-root w-full relative">
 
       {data.selfIntroductions ? (
-        <div className="ml-[4%] xl:ml-[6%] w-full max-w-[1200px]">
+        <div className="cover-letter-content-wrap ml-[4%] xl:ml-[6%] w-full max-w-[1200px]">
         <div className="flex items-start gap-8 xl:gap-12">
 
           {/* 메인 타임라인 */}
@@ -299,7 +299,7 @@ export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterPr
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="hidden xl:block sticky top-40 w-44 shrink-0"
+            className="cover-letter-native-index hidden xl:block sticky top-40 w-44 shrink-0"
           >
             <div className="flex flex-col gap-6 border-l-2 border-[#0047BB]/10 pl-6 py-2">
               <div className="text-xs font-black tracking-[0.2em] text-[#0047BB]/60 mb-2">INDEX</div>

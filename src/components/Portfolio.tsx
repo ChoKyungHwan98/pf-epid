@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowUpRight, X, MousePointer2 } from 'lucide-react';
-import { EditableText } from './EditableText';
 import { ProjectDetail } from './ProjectDetail';
 import { ProjectCard } from './ProjectCard';
 import type { Project } from '../types';
@@ -16,7 +15,7 @@ interface PortfolioProps {
   initialProjectId?: number | null;
 }
 
-export const Portfolio = ({ isEditing, projects, setProjects, onBack, initialProjectId }: PortfolioProps) => {
+export const Portfolio = ({ isEditing, projects, setProjects, initialProjectId }: PortfolioProps) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
@@ -36,6 +35,18 @@ export const Portfolio = ({ isEditing, projects, setProjects, onBack, initialPro
   };
 
   const filteredProjects = projects.filter(p => isProjectInCategory(p, activeCategory));
+  const categoryStats = categories.map(category => ({
+    label: category,
+    count: projects.filter(p => isProjectInCategory(p, category)).length,
+  }));
+  const categoryNotes: Record<string, string> = {
+    '전체': '프로젝트 전체 보기',
+    '밸런스 기획': '수치, 보상, 성장 곡선',
+    '시스템 기획': '규칙, 흐름, 플레이 구조',
+    '코어 룰 기획': '핵심 루프와 판단 기준',
+    '프로토타이핑': '검증 가능한 형태로 구현',
+    'AI 활용': '제작 속도와 반복 개선',
+  };
 
   useEffect(() => {
     if (selectedProject) {
@@ -49,142 +60,141 @@ export const Portfolio = ({ isEditing, projects, setProjects, onBack, initialPro
   }, [selectedProject]);
 
   return (
-    <div className="min-h-screen bg-transparent relative">
-      {/* Subtle background effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px]" style={{background: 'rgba(0,71,187,0.04)'}}></div>
-        <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] rounded-full blur-[100px]" style={{background: 'rgba(80,0,20,0.03)'}}></div>
-      </div>
-
+    <div className="portfolio-dashboard dashboard-view-portfolio min-h-screen bg-transparent relative">
       <motion.section
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 pt-28 pb-16 px-4 md:px-6 max-w-[1400px] mx-auto"
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+        className="portfolio-dashboard-section relative z-10 pt-28 pb-16 px-4 md:px-6 max-w-[1400px] mx-auto"
       >
-        <div className="bg-white rounded-4xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border border-black/5 p-6 md:p-8 lg:p-12 min-h-[80vh]">
+        <div className="portfolio-workspace">
+          <div className="portfolio-main-panel">
 
-        {/* Page Header */}
-        <div className="mb-10 pb-10 border-b border-zinc-100">
-          <p className="text-[11px] font-black tracking-[0.3em] uppercase text-[#0047BB] mb-3">GAME PLANNING PORTFOLIO</p>
-          <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
-            <h1 className="text-3xl lg:text-4xl font-display font-black tracking-tighter text-zinc-900 leading-none">기획 포트폴리오</h1>
-            <span className="text-zinc-400 font-medium text-base mb-0.5">총 {projects.length}개 프로젝트</span>
+          {/* Page Header */}
+          <div className="portfolio-page-head">
+            <div>
+              <div className="portfolio-title-row">
+                <h1>기획 포트폴리오</h1>
+                <span>총 {projects.length}개 프로젝트</span>
+              </div>
+            </div>
           </div>
-          <p className="text-zinc-500 text-[14px] mt-3 font-medium">시스템 기획 · 밸런스 설계 · 프로토타이핑 · AI 활용</p>
-        </div>
 
-        {/* Polished Filter Bar with Sliding Indicator */}
-        <div className="flex flex-col items-center mb-10 relative">
-          <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 bg-zinc-100/50 backdrop-blur-xl rounded-4xl border border-black/5">
-            {categories.map((category) => {
-              const count = projects.filter(p => isProjectInCategory(p, category)).length;
-              const isActive = activeCategory === category;
-
-              return (
-                <button
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`relative px-6 py-3.5 rounded-3xl transition-all duration-500 group flex items-center gap-2.5 overflow-hidden min-w-fit ${
-                    isActive ? 'text-white' : 'text-zinc-700 hover:text-zinc-900'
-                  }`}
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={activeCategory}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.14 }}
+              className="portfolio-project-grid"
+            >
+              {filteredProjects.map((project, index) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{
+                    duration: 0.2,
+                    delay: Math.min(index * 0.01, 0.08),
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
                 >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeCategory"
-                      className="absolute inset-0 bg-[#0047BB] shadow-lg shadow-[#0047BB]/20"
-                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
-                  <span className="relative z-10 text-[15px] font-bold tracking-tight leading-none transition-colors">
-                    {category}
-                  </span>
-                  <span className={`relative z-10 text-[11px] font-black px-2 py-0.5 rounded-md transition-colors duration-300 ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-zinc-200 text-zinc-600 group-hover:bg-zinc-300 group-hover:text-zinc-800'
-                  }`}>
-                    {String(count).padStart(2, '0')}
-                  </span>
-                </button>
-              );
-            })}
+                  <ProjectCard
+                    project={project}
+                    idx={projects.findIndex(p => p.id === project.id)}
+                    isEditing={isEditing}
+                    projects={projects}
+                    setProjects={setProjects}
+                    onProjectClick={setSelectedProject}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
           </div>
-        </div>
-        {/* Polished Project Grid with Refined Hierarchy */}
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={activeCategory}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12"
-          >
-            {filteredProjects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ 
-                  duration: 0.3, 
-                  delay: Math.min(index * 0.02, 0.3),
-                  ease: [0.16, 1, 0.3, 1] 
-                }}
-              >
-                <ProjectCard 
-                  project={project} 
-                  idx={projects.findIndex(p => p.id === project.id)}
-                  isEditing={isEditing}
-                  projects={projects}
-                  setProjects={setProjects}
-                  onProjectClick={setSelectedProject}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        </AnimatePresence>
+
+          <aside className="portfolio-wing dashboard-right-rail os-right-sidebar">
+            <div className="portfolio-wing-card">
+              <div className="portfolio-wing-title">
+                <span>기획 영역</span>
+              </div>
+              <div className="portfolio-filter-stack right-sidebar-list">
+                {categoryStats.map(({ label, count }, index) => {
+                  const isActive = activeCategory === label;
+
+                  return (
+                  <button
+                    type="button"
+                    key={label}
+                    aria-pressed={isActive}
+                    className={`portfolio-filter-card${isActive ? ' is-active' : ''}${label === '전체' ? ' is-all' : ''}`}
+                    onClick={() => setActiveCategory(label)}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="activePortfolioFilterCard"
+                        className="portfolio-filter-card-bg"
+                        transition={{ type: 'spring', bounce: 0.12, duration: 0.28 }}
+                      />
+                    )}
+                    <span className="portfolio-filter-card-index">{label === '전체' ? '전체' : String(index).padStart(2, '0')}</span>
+                    <span className="portfolio-filter-card-copy">
+                      <strong>{label}</strong>
+                      <em>{categoryNotes[label]}</em>
+                    </span>
+                    <span className="portfolio-filter-card-count">{count}</span>
+                  </button>
+                  );
+                })}
+              </div>
+            </div>
+          </aside>
         </div>
       </motion.section>
 
       {/* Detail Overlay Modal */}
-      <AnimatePresence>
-        {selectedProject && (
-          <div className="fixed inset-0 z-[100]">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedProject(null)}
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            />
-
-            {/* Panel */}
-            <div className="absolute inset-0 flex items-center justify-center p-0 md:p-6 pointer-events-none">
+      {createPortal(
+        <AnimatePresence>
+          {selectedProject && (
+            <div className="project-detail-overlay">
               <motion.div
-                initial={{ opacity: 0, y: 40, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 40, scale: 0.97 }}
-                transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-                className="w-[98vw] md:w-[95vw] h-[98vh] md:h-[95vh] max-w-[1600px] bg-white md:rounded-3xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.35)] overflow-hidden relative pointer-events-auto flex flex-col"
-              >
-                {/* Content - height fills modal, scroll managed per-tab */}
-                <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-                  <ProjectDetail
-                    project={selectedProject}
-                    onBack={() => setSelectedProject(null)}
-                    isEditing={isEditing}
-                    onSaveContent={(c) => {
-                      const p = [...projects];
-                      const i = p.findIndex(pp => pp.id === selectedProject.id);
-                      if (i !== -1) { p[i].content = c; setProjects(p); setSelectedProject({ ...selectedProject, content: c }); }
-                    }}
-                  />
-                </div>
-              </motion.div>
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedProject(null)}
+                className="project-detail-backdrop"
+              />
+
+              <div className="project-detail-stage">
+                <motion.div
+                  initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 24, scale: 0.98 }}
+                  transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+                  className="project-detail-modal"
+                >
+                  <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                    <ProjectDetail
+                      project={selectedProject}
+                      onBack={() => setSelectedProject(null)}
+                      isEditing={isEditing}
+                      onSaveContent={(c) => {
+                        const p = [...projects];
+                        const i = p.findIndex(pp => pp.id === selectedProject.id);
+                        if (i !== -1) { p[i].content = c; setProjects(p); setSelectedProject({ ...selectedProject, content: c }); }
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              </div>
             </div>
-          </div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };
