@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useAnimation, useMotionValue, Variants } from 'motion/react';
-import { ChevronLeft, ChevronRight, Search, Move, MousePointer2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, MousePointer2 } from 'lucide-react';
 
 interface EBookGalleryProps {
   images: string[];
@@ -37,13 +37,18 @@ const slideVariants: Variants = {
   }),
 };
 
+const isViewerControl = (target: EventTarget | null) =>
+  target instanceof Element && Boolean(target.closest('button, input, [data-ebook-control]'));
+
 export const EBookGallery = ({ images, currentIndex, onPageChange, maxScale = 100 }: EBookGalleryProps) => {
   const [[page, direction], setPage] = useState([currentIndex, 0]);
   const [zoom, setZoom] = useState(1);
   const [showHint, setShowHint] = useState(true);
   const [showSwipeTutorial, setShowSwipeTutorial] = useState(true);
+  const [controlsExpanded, setControlsExpanded] = useState(false);
   const tutorialControls = useAnimation();
   const containerRef = useRef<HTMLDivElement>(null);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   
   // Throttle wheel pagination
   const lastWheelTime = useRef(0);
@@ -67,15 +72,37 @@ export const EBookGallery = ({ images, currentIndex, onPageChange, maxScale = 10
     }
   }, [showSwipeTutorial, currentIndex, tutorialControls]);
 
-  const paginate = useCallback((newDirection: number) => {
+  const goToPage = useCallback((targetIndex: number) => {
+    const next = Math.min(Math.max(targetIndex, 0), images.length - 1);
+    if (next === currentIndex) return;
     if (zoom > 1) setZoom(1);
-    const next = currentIndex + newDirection;
-    if (next >= 0 && next < images.length) {
-      onPageChange(next);
-      setShowSwipeTutorial(false);
-      setShowHint(false);
-    }
+    onPageChange(next);
+    setShowSwipeTutorial(false);
+    setShowHint(false);
   }, [currentIndex, images.length, onPageChange, zoom]);
+
+  const paginate = useCallback((newDirection: number) => {
+    goToPage(currentIndex + newDirection);
+  }, [currentIndex, goToPage]);
+
+  const updatePageFromProgressPointer = useCallback((event: React.PointerEvent<HTMLInputElement>) => {
+    if (images.length <= 1) return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const ratio = Math.min(Math.max((event.clientX - bounds.left) / bounds.width, 0), 1);
+    goToPage(Math.round(ratio * (images.length - 1)));
+  }, [goToPage, images.length]);
+
+  const handleProgressPointerDown = useCallback((event: React.PointerEvent<HTMLInputElement>) => {
+    if (event.button !== 0) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    updatePageFromProgressPointer(event);
+  }, [updatePageFromProgressPointer]);
+
+  const handleProgressPointerMove = useCallback((event: React.PointerEvent<HTMLInputElement>) => {
+    if ((event.buttons & 1) === 0) return;
+    updatePageFromProgressPointer(event);
+  }, [updatePageFromProgressPointer]);
 
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
@@ -118,6 +145,41 @@ export const EBookGallery = ({ images, currentIndex, onPageChange, maxScale = 10
 
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < images.length - 1;
+  const pageProgress = images.length > 1 ? (currentIndex / (images.length - 1)) * 100 : 100;
+
+  const handleSurfacePointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (isViewerControl(event.target)) {
+      pointerStartRef.current = null;
+      return;
+    }
+    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+    containerRef.current?.focus({ preventScroll: true });
+  }, []);
+
+  const handleSurfacePointerUp = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    const start = pointerStartRef.current;
+    pointerStartRef.current = null;
+    if (!start || isViewerControl(event.target)) return;
+
+    const distance = Math.hypot(event.clientX - start.x, event.clientY - start.y);
+    if (distance > 8) return;
+    setControlsExpanded(previous => !previous);
+  }, []);
+
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      setControlsExpanded(false);
+      return;
+    }
+    if (event.target instanceof HTMLInputElement) return;
+    if (event.key === 'ArrowLeft' && hasPrev) {
+      event.preventDefault();
+      paginate(-1);
+    } else if (event.key === 'ArrowRight' && hasNext) {
+      event.preventDefault();
+      paginate(1);
+    }
+  }, [hasNext, hasPrev, paginate]);
 
   const getDragConstraints = () => {
     if (zoom <= 1) return { left: 0, right: 0, top: 0, bottom: 0 };
@@ -127,7 +189,104 @@ export const EBookGallery = ({ images, currentIndex, onPageChange, maxScale = 10
   };
 
   return (
-    <div ref={containerRef} className="w-full h-full relative select-none bg-white touch-none flex flex-col overflow-hidden">
+    <div
+      ref={containerRef}
+      className="ebook-viewer-shell w-full h-full relative select-none bg-white touch-none flex flex-col overflow-hidden"
+      role="region"
+      aria-label="기획서 뷰어"
+      aria-keyshortcuts="ArrowLeft ArrowRight Escape"
+      tabIndex={0}
+      onPointerDown={handleSurfacePointerDown}
+      onPointerUp={handleSurfacePointerUp}
+      onPointerCancel={() => { pointerStartRef.current = null; }}
+      onPointerLeave={() => { pointerStartRef.current = null; }}
+      onKeyDown={handleKeyDown}
+    >
+      <div className="ebook-viewer-hud" data-ebook-control>
+        <AnimatePresence initial={false} mode="wait">
+          {controlsExpanded ? (
+            <motion.div
+              key="expanded-page-controls"
+              className="ebook-viewer-toolbar"
+              role="toolbar"
+              aria-label="페이지 탐색"
+              initial={{ opacity: 0, y: -6, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.98 }}
+              transition={{ duration: 0.16 }}
+            >
+              <div className="ebook-viewer-toolbar-row">
+                <button
+                  type="button"
+                  className="ebook-viewer-toolbar-button"
+                  onClick={() => paginate(-1)}
+                  disabled={!hasPrev}
+                  aria-label="이전 페이지"
+                  title="이전 페이지"
+                >
+                  <ChevronLeft aria-hidden="true" />
+                </button>
+
+                <button
+                  type="button"
+                  className="ebook-viewer-page-readout"
+                  onClick={() => setControlsExpanded(false)}
+                  aria-label={`현재 ${currentIndex + 1}페이지, 전체 ${images.length}페이지. 페이지 탐색 닫기`}
+                  title="페이지 탐색 닫기"
+                >
+                  <strong>{currentIndex + 1}</strong>
+                  <span>/</span>
+                  <span>{images.length}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="ebook-viewer-toolbar-button"
+                  onClick={() => paginate(1)}
+                  disabled={!hasNext}
+                  aria-label="다음 페이지"
+                  title="다음 페이지"
+                >
+                  <ChevronRight aria-hidden="true" />
+                </button>
+              </div>
+
+              <input
+                className="ebook-viewer-progress"
+                type="range"
+                min={1}
+                max={images.length}
+                step={1}
+                value={currentIndex + 1}
+                disabled={images.length <= 1}
+                onInput={event => goToPage(Number(event.currentTarget.value) - 1)}
+                onPointerDown={handleProgressPointerDown}
+                onPointerMove={handleProgressPointerMove}
+                aria-label={`페이지 이동, 현재 ${currentIndex + 1}페이지`}
+                style={{ '--ebook-progress': `${pageProgress}%` } as React.CSSProperties}
+              />
+            </motion.div>
+          ) : (
+            <motion.button
+              key="collapsed-page-counter"
+              type="button"
+              className="ebook-viewer-page-counter"
+              onClick={() => setControlsExpanded(true)}
+              aria-label={`현재 ${currentIndex + 1}페이지, 전체 ${images.length}페이지. 페이지 탐색 열기`}
+              title="페이지 탐색 열기"
+              initial={{ opacity: 0, y: -4, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.96 }}
+              transition={{ duration: 0.14 }}
+            >
+              <strong>{currentIndex + 1}</strong>
+              <span>/</span>
+              <span>{images.length}</span>
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+
       {/* Zoom Indicator */}
       {zoom > 1 && (
         <div className="absolute top-6 right-6 z-50 bg-black/80 px-4 py-2 rounded-xl text-white text-xs font-black flex items-center gap-3 border border-white/10 shadow-2xl backdrop-blur-md">

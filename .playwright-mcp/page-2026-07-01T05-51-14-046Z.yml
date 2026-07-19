@@ -1,0 +1,176 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4] [cursor=pointer]:
+      - img [ref=e6]
+      - text: Data Console
+    - generic [ref=e10]: 프로젝트 관리
+    - generic [ref=e11]:
+      - generic [ref=e12]: 리뷰 분석 파이프라인
+      - link "대시보드" [ref=e13] [cursor=pointer]:
+        - /url: "#"
+      - link "리뷰 탐색" [ref=e14] [cursor=pointer]:
+        - /url: "#"
+      - link "AI 인사이트" [ref=e15] [cursor=pointer]:
+        - /url: "#"
+      - link "표본 설계" [ref=e16] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=e18]: 포트폴리오
+  - generic [ref=e20]:
+    - banner [ref=e21]:
+      - generic [ref=e23]:
+        - generic [ref=e24]: 현재 분석 중
+        - generic [ref=e25]:
+          - generic [ref=e26]: 🎮
+          - generic [ref=e27]: P의 거짓 (Lies of P)
+    - main [ref=e29]:
+      - generic [ref=e30]:
+        - heading "분석 요약" [level=1] [ref=e31]
+        - paragraph [ref=e32]: 한국 Steam 유저 리뷰를 분석해 실제 시장 반응을 추정한 결과입니다
+        - generic [ref=e34]:
+          - heading "Steam 추천률 92% · 수집 데이터 추천률 91% · 보정 후 추정 92%" [level=2] [ref=e35]
+          - paragraph [ref=e36]: 부정 리뷰를 깊이 분석하려고 비추천을 일부러 더 수집했습니다 (수집 데이터 추천률 91%). 이 차이를 보정 계수로 바로잡은 결과 92%로, Steam 공식 추천률 92%와 일치합니다. 가장 호평받은 영역은 게임플레이, 가장 개선이 필요한 영역은 성능·버그(부정 44%)입니다.
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - generic [ref=e39]: 분석 리뷰
+            - generic [ref=e40]: 1,059건
+            - generic [ref=e41]: 유효 리뷰 기준
+          - generic [ref=e42]:
+            - generic [ref=e43]: 실제 추천률
+            - generic [ref=e44]: 91%
+            - generic [ref=e45]: 모집단 92% 대비 -1%p
+          - generic [ref=e46]:
+            - generic [ref=e47]: 긍정 감정
+            - generic [ref=e48]: 기쁨 · 만족
+            - generic [ref=e49]: 상위 반응 유형
+          - generic [ref=e50]:
+            - generic [ref=e51]: 개선 필요 영역
+            - generic [ref=e52]: —
+            - generic [ref=e53]: 부정 언급 1위
+        - generic [ref=e54]:
+          - generic [ref=e55]: 추천률 개요
+          - generic [ref=e56]:
+            - generic [ref=e57]:
+              - heading "Steam 전체" [level=4] [ref=e58]
+              - generic [ref=e59]: 한국 유저 리뷰 전체 기준
+              - generic [ref=e60]:
+                - generic [ref=e61]:
+                  - generic [ref=e62]: 총 리뷰
+                  - generic [ref=e63]: 5,508건
+                - generic [ref=e64]:
+                  - generic [ref=e65]: 종합 평가
+                  - generic [ref=e66]: 매우 긍정적
+              - generic [ref=e67]: 추천률
+              - generic [ref=e68]:
+                - generic [ref=e69]: 추천 92.4%
+                - generic [ref=e70]: 7.6%
+              - generic [ref=e71]: 비교 기준
+            - generic [ref=e72]:
+              - heading "수집 데이터" [level=4] [ref=e73]
+              - generic [ref=e74]: 부정 리뷰를 더 수집해 실제보다 낮게 나옴
+              - generic [ref=e75]:
+                - generic [ref=e76]:
+                  - generic [ref=e77]: 분석 리뷰
+                  - generic [ref=e78]: 1059건
+                - generic [ref=e79]:
+                  - generic [ref=e80]: 표본 오차
+                  - generic [ref=e81]: ±0%
+              - generic [ref=e82]: 추천률
+              - generic [ref=e83]:
+                - generic [ref=e84]: 추천 90.9%
+                - generic [ref=e85]: 9.1%
+              - generic [ref=e86]: 의도적 과표집 데이터
+            - generic [ref=e87]:
+              - heading "실제 시장 추정" [level=4] [ref=e88]
+              - generic [ref=e89]: 수집 편향을 보정한 최종 추정값
+              - generic [ref=e90]:
+                - generic [ref=e91]:
+                  - generic [ref=e92]: 추천 보정계수
+                  - generic [ref=e93]: ×1.016
+                - generic [ref=e94]:
+                  - generic [ref=e95]: 비추천 보정계수
+                  - generic [ref=e96]: ×0.839
+              - generic [ref=e97]: 추정 추천률
+              - generic [ref=e98]:
+                - generic [ref=e99]: 추천 92.4%
+                - generic [ref=e100]: 7.6%
+              - generic [ref=e101]: Steam 공식값과 일치
+        - generic [ref=e102]:
+          - generic [ref=e103]:
+            - generic [ref=e104]: 분석 리뷰 수
+            - generic [ref=e105]: 1059건
+            - generic [ref=e106]: 유효 리뷰 기준
+          - generic [ref=e107]:
+            - generic [ref=e108]: 수집 데이터 추천률
+            - generic [ref=e109]: 91%
+            - generic [ref=e110]: 과표집 보정 전
+          - generic [ref=e111]:
+            - generic [ref=e112]: 실제 시장 추정치
+            - generic [ref=e113]: 92%
+            - generic [ref=e114]: 보정 후 최종값
+          - generic [ref=e115]:
+            - generic [ref=e116]: Steam 추천률
+            - generic [ref=e117]: 92%
+            - generic [ref=e118]: 공식 기준
+        - generic [ref=e119]:
+          - generic [ref=e120]: 유저 반응 분석
+          - generic [ref=e121]:
+            - generic [ref=e123]:
+              - generic [ref=e124]: 긍정 / 부정 비율
+              - generic [ref=e125]: 전체 감성 분류
+            - generic [ref=e130]:
+              - generic [ref=e131]: 세부 감정
+              - generic [ref=e132]: 기쁨 · 만족 · 분노 · 실망 등
+        - generic [ref=e135]:
+          - generic [ref=e136]: 영역별 평가
+          - generic [ref=e137]:
+            - generic [ref=e139]:
+              - generic [ref=e140]: 수집 데이터
+              - generic [ref=e141]: 과표집 보정 전
+            - generic [ref=e145]: →
+            - generic [ref=e147]:
+              - generic [ref=e148]: 시장 추정
+              - generic [ref=e149]: 보정 후 실제 시장 기준
+        - generic [ref=e153]: 플레이타임별 추천률
+        - generic [ref=e156]:
+          - generic [ref=e157]: 월별 추천률 추이
+          - generic [ref=e160]:
+            - generic [ref=e161]: "유의미한 변화:"
+            - generic [ref=e162]: 2025-12→2026-01 하락 13.1%p
+        - generic [ref=e163]:
+          - generic [ref=e164]:
+            - generic [ref=e165]:
+              - generic [ref=e166]: 주요 발견
+              - generic [ref=e167]: AI · 2026-05-29 02:52 · 284in/412out tok
+            - generic [ref=e169]:
+              - generic [ref=e170]:
+                - generic [ref=e171]: 높은 긍정 평가
+                - generic [ref=e172]: 스팀 평가 92%로 긍정적 반응이 지배적이며, 특히 기쁨과 만족 감정이 높게 나타남.
+                - generic [ref=e173]: → 게임의 핵심 재미 요소가 유저들에게 잘 어필되고 있음을 시사합니다.
+              - generic [ref=e174]:
+                - generic [ref=e175]: 최적화 이슈
+                - generic [ref=e176]: 최적화 관련 부정적 의견이 존재하며, 필드 및 보스 관련 버그가 보고됨.
+                - generic [ref=e177]: → 게임 경험 저해 요소를 개선하여 전반적인 만족도를 향상시킬 필요가 있습니다.
+              - generic [ref=e178]:
+                - generic [ref=e179]: 그래픽 긍정 평가
+                - generic [ref=e180]: 게임 분위기와 그래픽에 대한 긍정적인 언급이 많음.
+                - generic [ref=e181]: → 시각적인 매력이 게임의 중요한 성공 요인임을 보여줍니다.
+          - generic [ref=e182]:
+            - generic [ref=e183]:
+              - generic [ref=e184]: 개선 제안
+              - button "AI 재생성" [ref=e185] [cursor=pointer]
+            - generic [ref=e187]:
+              - generic [ref=e188]:
+                - generic [ref=e189]: P1
+                - generic [ref=e190]:
+                  - generic [ref=e191]: 최적화 개선
+                  - generic [ref=e192]: 필드 및 보스 관련 버그 수정, 전반적인 최적화 개선을 통해 쾌적한 플레이 환경을 제공해야 합니다.
+              - generic [ref=e193]:
+                - generic [ref=e194]: P2
+                - generic [ref=e195]:
+                  - generic [ref=e196]: 그래픽 유지
+                  - generic [ref=e197]: 현재 긍정적인 평가를 받는 그래픽 스타일과 분위기를 유지하고 발전시켜야 합니다.
+              - generic [ref=e198]:
+                - generic [ref=e199]: P3
+                - generic [ref=e200]:
+                  - generic [ref=e201]: 유저 소통 강화
+                  - generic [ref=e202]: 지속적인 피드백 수집 및 소통을 통해 개선점을 파악하고, 유저 만족도를 높여야 합니다.

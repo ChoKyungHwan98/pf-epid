@@ -475,7 +475,7 @@ export const MobileResume = ({ data }: Props) => {
                   )}
 
                   {/* Group 2: AI Assistants */}
-                  {data.tools.filter(t => ['ChatGPT','Claude','Gemini','Antigravity'].includes(t.name)).length > 0 && (
+                  {data.tools.filter(t => ['ChatGPT','Claude','Gemini','Hermes','Codex','Antigravity'].includes(t.name)).length > 0 && (
                     <div>
                       <h4 style={{
                         fontSize: 8.5, fontWeight: 900, color: '#0047BB',
@@ -484,7 +484,7 @@ export const MobileResume = ({ data }: Props) => {
                         paddingBottom: 6, marginBottom: 12,
                       }}>AI Assistants</h4>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px' }}>
-                        {data.tools.filter(t => ['ChatGPT','Claude','Gemini','Antigravity'].includes(t.name)).map((tool, i) => (
+                        {data.tools.filter(t => ['ChatGPT','Claude','Gemini','Hermes','Codex','Antigravity'].includes(t.name)).map((tool, i) => (
                           <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                             <div style={{ flexShrink: 0, paddingTop: 1, color: '#1A2332' }}>
                               {BRAND_ICONS[tool.name] || <Wrench style={{ width: 18, height: 18, color: '#a1a1aa' }} />}
@@ -661,4 +661,3 @@ export const MobileResume = ({ data }: Props) => {
     </motion.div>
   );
 };
-

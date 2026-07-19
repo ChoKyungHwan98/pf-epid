@@ -1,6 +1,6 @@
 import type { Project } from '../types';
 
-export const PROJECTS: Project[] = [
+const PROJECTS_DATA: Project[] = [
   {
     id: 1,
     title: "도로시아",
@@ -228,5 +228,69 @@ LLM(대규모 언어 모델)을 활용한 시나리오 챗봇 프로젝트입니
 ### 2.2 텐션 설계 및 예외 처리
 - 턴(Turn) 경과에 따라 NPC의 감정이 4단계(답답함→초조함→분노→극대노)로 악화되는 타임어택 텐션 설계
 - 상황에 맞지 않는 대화(OOC), 플레이어의 중국어 사용 등 규칙 외의 행동을 엄격히 차단하는 예외 처리 로직 구현`
+  },
+  {
+    id: 6,
+    title: "AI 리뷰 데이터 분석",
+    roles: ["AI 활용"],
+    description: "Steam 리뷰를 LLM으로 다차원 분석하고 표본 편향을 보정해, 실제 시장 반응과 개선 우선순위를 도출한 ai 리뷰 데이터 분석 프로그램입니다.",
+    keyTasks: ["AI 활용", "데이터 분석"],
+    tags: ["LLM 다차원분석", "표본설계", "편향보정", "ABSA", "FastAPI"],
+    image: "./images/ai-review-cover.jpg",
+    externalUrl: "./prototypes/ai-review-home.html",
+    externalTabLabel: "AI 리뷰데이터",
+    openExternalByDefault: true,
+    externalOnly: true,
+    externalCtaLabel: "대시보드 체험하기",
+    externalCtaNote: "설치 없이 분석 결과를 탐색하고 필터를 직접 조작할 수 있습니다.",
+    color: "from-sky-500/20 to-blue-500/20",
+    status: "개인 프로젝트",
+    stats: {
+      released: "웹 대시보드 · P의 거짓 분석",
+      teamSize: "1인",
+      myRole: "기획 · 데이터 분석 · 개발",
+    },
+    content: `# AI 리뷰 데이터 분석
+
+Steam 리뷰를 LLM으로 분석해 유저 반응을 정량화하고, 무엇을 먼저 고쳐야 하는지 우선순위를 뽑아내는 리뷰 인텔리전스 시스템입니다. P의 거짓(Lies of P) 한국어 리뷰를 대상으로 만들었습니다.
+
+## 1. 왜 만들었나
+리뷰는 쌓이지만 "그래서 뭘 고쳐야 하나"는 잘 안 보입니다. 별점과 추천률만으로는 어느 영역이 문제인지 알 수 없어, 리뷰 텍스트를 영역별로 쪼개 정량 지표로 바꾸는 파이프라인을 직접 설계했습니다.
+
+## 2. 분석 파이프라인
+### 표본 설계
+- Cochran 표본 설계로 목표 오차한계를 정하고 층화 추출
+- 부정 리뷰가 드물어 판단이 흔들리는 문제를 막으려 부정 표본을 의도적으로 더 수집
+
+### LLM 다차원 분석
+- 리뷰 한 건마다 감성·감정과 영역별 반응(ABSA 5축: 그래픽·게임플레이·스토리·성능/버그·가성비)을 분류
+- 모바일 이식 관점의 시사점도 함께 태깅
+
+### 편향 보정
+- 부정을 과표집한 만큼 그대로 두면 추천률이 낮게 나옴
+- 사후 층화 가중(post-stratification)으로 표본 편향을 되돌림
+- 표본 추천률 91% → 보정 후 92%로, Steam 공식 추천률 92%와 일치
+
+### 품질·신뢰도 점검
+- 완전성·일관성·대표성·정확도 4축으로 데이터 품질을 점수화
+- 표본 재검증으로 AI 분류의 신뢰 구간 확인
+
+## 3. 결과 — P의 거짓
+- 유효 리뷰 1,059건 분석
+- 최고 호평 영역은 게임플레이, 개선 1순위는 성능·버그(부정 44%)
+- 상위 감정은 기쁨·만족
+- 영역별 부정률로 정렬해 "무엇을 먼저 개선할지"를 기획 판단 근거로 삼음
+
+> 인터랙티브 대시보드는 오른쪽 '분석 대시보드' 탭에서 전체 화면으로 체험할 수 있습니다.
+
+## 4. 기술 스택
+- 수집·분석: Python, Steam Web API, OpenRouter(LLM)
+- 대시보드: FastAPI + 정적 프론트엔드, Chart.js`
   }
 ];
+
+const PROJECT_ORDER = [1, 6, 2, 3, 4, 5];
+
+export const PROJECTS: Project[] = [...PROJECTS_DATA].sort(
+  (a, b) => PROJECT_ORDER.indexOf(a.id) - PROJECT_ORDER.indexOf(b.id),
+);

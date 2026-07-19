@@ -1,0 +1,83 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="mainClip">
+      <rect x="220" y="64" width="1380" height="836"/>
+    </clipPath>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="3" seed="12" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+
+  <!-- Dashboard shell -->
+  <rect width="1600" height="900" fill="#11161D"/>
+  <rect x="220" y="64" width="1380" height="836" fill="#12171E"/>
+
+  <!-- Background composition: the philosophy itself becomes the spatial system -->
+  <g clip-path="url(#mainClip)">
+    <rect x="268" y="324" width="318" height="34" rx="17" fill="#F5F6F8" fill-opacity="0.035"/>
+    <ellipse cx="1048" cy="470" rx="300" ry="336" stroke="#F5F6F8" stroke-opacity="0.032" stroke-width="46"/>
+    <rect x="1452" y="336" width="34" height="316" rx="17" fill="#F5F6F8" fill-opacity="0.045"/>
+    <rect x="1311" y="477" width="316" height="34" rx="17" fill="#F5F6F8" fill-opacity="0.045"/>
+    <rect x="220" y="64" width="1380" height="836" filter="url(#grain)" opacity="0.018"/>
+  </g>
+
+  <!-- Sidebar -->
+  <rect width="220" height="900" fill="#171C24"/>
+  <path d="M219.5 0V900" stroke="#FFFFFF" stroke-opacity="0.08"/>
+  <g font-family="Pretendard, Noto Sans KR, Malgun Gothic, Arial, sans-serif">
+    <path d="M28 26H44M28 32H44M28 38H44" stroke="#E9EEF5" stroke-width="2" stroke-linecap="round"/>
+    <text x="58" y="36" fill="#F7F9FC" font-size="14" font-weight="800">지원자 조경환</text>
+
+    <rect x="14" y="68" width="192" height="48" rx="10" fill="#FFFFFF" fill-opacity="0.09"/>
+    <rect x="14.5" y="68.5" width="191" height="47" rx="9.5" stroke="#FFFFFF" stroke-opacity="0.06"/>
+    <path d="M28 91.5L36 84.5L44 91.5V101H39V95H33V101H28V91.5Z" stroke="#F7F9FC" stroke-width="1.8" stroke-linejoin="round"/>
+    <text x="58" y="98" fill="#F7F9FC" font-size="14" font-weight="800">홈</text>
+
+    <path d="M30 139H39L44 144V157H30V139Z" stroke="#AEB8C5" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M39 139V144H44M33 149H41M33 153H40" stroke="#AEB8C5" stroke-width="1.5" stroke-linecap="round"/>
+    <text x="58" y="152" fill="#CAD2DC" font-size="14" font-weight="700">이력 및 자기소개</text>
+
+    <rect x="29" y="181" width="16" height="13" rx="2.5" stroke="#AEB8C5" stroke-width="1.8"/>
+    <path d="M34 181V178.5C34 177.1 35.1 176 36.5 176H37.5C38.9 176 40 177.1 40 178.5V181M29 187H45" stroke="#AEB8C5" stroke-width="1.6"/>
+    <text x="58" y="194" fill="#CAD2DC" font-size="14" font-weight="700">포트폴리오</text>
+
+    <rect x="29" y="225" width="17" height="12" rx="5" stroke="#AEB8C5" stroke-width="1.8"/>
+    <path d="M33 231H37M35 229V233M41 229.5H41.1M43 232.5H43.1" stroke="#AEB8C5" stroke-width="1.7" stroke-linecap="round"/>
+    <text x="58" y="236" fill="#CAD2DC" font-size="14" font-weight="700">게임 플레이 이력</text>
+
+    <rect x="29" y="267" width="17" height="13" rx="2.5" stroke="#AEB8C5" stroke-width="1.8"/>
+    <path d="M32 263L36 267M43 263L39 267" stroke="#AEB8C5" stroke-width="1.6" stroke-linecap="round"/>
+    <text x="58" y="279" fill="#CAD2DC" font-size="14" font-weight="700">애니메이션 시청 이력</text>
+
+    <path d="M28 848H43V860H28V848ZM28 849L35.5 855L43 849" stroke="#AEB8C5" stroke-width="1.7" stroke-linejoin="round"/>
+    <text x="58" y="858" fill="#AEB8C5" font-size="12" font-weight="700">ckh980624@gmail.com</text>
+  </g>
+
+  <!-- Header -->
+  <rect x="220" width="1380" height="64" fill="#171C24" fill-opacity="0.96"/>
+  <path d="M220 63.5H1600" stroke="#FFFFFF" stroke-opacity="0.08"/>
+  <g font-family="Pretendard, Noto Sans KR, Malgun Gothic, Arial, sans-serif" font-size="14" font-weight="700">
+    <text x="248" y="38" fill="#98A4B3">포트폴리오</text>
+    <text x="323" y="38" fill="#536171">/</text>
+    <text x="340" y="38" fill="#F7F9FC">홈 화면</text>
+  </g>
+
+  <!-- Hero: the personal sentence is the only visual signature -->
+  <g font-family="Pretendard, Noto Sans KR, Malgun Gothic, Arial, sans-serif">
+    <text x="596" y="405" fill="#F5F6F8" font-size="76" font-weight="800" letter-spacing="-2.8">
+      <tspan>−</tspan><tspan dx="8">를 0으로,</tspan>
+    </text>
+    <text x="950" y="405" fill="#F5F6F8" font-size="76" font-weight="800" letter-spacing="-2.8">
+      <tspan>0을</tspan><tspan dx="12">+</tspan><tspan dx="8">로.</tspan>
+    </text>
+
+    <text x="604" y="480" fill="#C9D0D9" font-size="19" font-weight="600" letter-spacing="-0.35">누군가의 하루에 즐거움을 더하는 게임 기획자가 되고 싶습니다.</text>
+
+    <rect x="604" y="531" width="116" height="44" rx="6" fill="#F2F3F5"/>
+    <text x="662" y="559" fill="#151A21" font-size="14" font-weight="800" text-anchor="middle">이력서 보기</text>
+    <text x="750" y="559" fill="#D6DCE4" font-size="14" font-weight="700">포트폴리오</text>
+    <path d="M824 554H838M833 549L838 554L833 559" stroke="#D6DCE4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+</svg>

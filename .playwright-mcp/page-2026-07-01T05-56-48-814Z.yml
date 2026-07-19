@@ -1,0 +1,188 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - button "메뉴 펼치기" [ref=e5] [cursor=pointer]:
+      - img [ref=e6]
+    - navigation "주요 화면" [ref=e7]:
+      - button "홈" [ref=e8] [cursor=pointer]:
+        - img [ref=e9]
+      - button "이력 및 자기소개" [ref=e12] [cursor=pointer]:
+        - img [ref=e13]
+      - button "포트폴리오" [ref=e16] [cursor=pointer]:
+        - img [ref=e17]
+      - button "게임 플레이 이력" [ref=e21] [cursor=pointer]:
+        - img [ref=e22]
+      - button "애니메이션 시청 이력" [ref=e24] [cursor=pointer]:
+        - img [ref=e25]
+    - generic "ckh980624@gmail.com" [ref=e28]:
+      - img [ref=e29]
+  - generic [ref=e32]:
+    - banner [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e35]: 포트폴리오 /
+        - strong [ref=e36]: 포트폴리오
+    - main [ref=e37]:
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e44]:
+            - heading "기획 포트폴리오" [level=1] [ref=e45]
+            - generic [ref=e46]: 총 6개 프로젝트
+          - generic [ref=e47]:
+            - generic [ref=e49] [cursor=pointer]:
+              - img "도로시아" [ref=e51]
+              - generic [ref=e53]:
+                - generic [ref=e55]: 구글플레이스토어 출시
+                - heading "도로시아" [level=3] [ref=e56]
+                - paragraph [ref=e59]: 핵앤슬래시 방치형 RPG의 전투/재화 밸런스와 방치 보상 시스템을 담당했습니다.
+                - generic [ref=e60]:
+                  - paragraph [ref=e61]: 주요 작업
+                  - generic [ref=e62]:
+                    - generic [ref=e63]: 밸런스 기획
+                    - generic [ref=e64]: 시스템 기획
+                    - generic [ref=e65]: AI 활용
+                - generic [ref=e66]:
+                  - generic [ref=e67]: PDPS
+                  - generic [ref=e68]: TTK설계
+                  - generic [ref=e69]: 재화순환
+                  - generic [ref=e70]: 성장곡선
+                  - generic [ref=e71]: AI시뮬레이터
+                - generic [ref=e72]:
+                  - generic [ref=e73]: 상세 보기
+                  - img [ref=e74]
+            - generic [ref=e77] [cursor=pointer]:
+              - img "Digreed" [ref=e79]
+              - generic [ref=e81]:
+                - generic [ref=e83]: 로컬 제작 완료
+                - heading "Digreed" [level=3] [ref=e84]
+                - paragraph [ref=e87]: 로그라이트 RPG의 코어 루프와 필요 시스템을 정의하고, 각 파트를 팀원에게 분배·총괄했습니다.
+                - generic [ref=e88]:
+                  - paragraph [ref=e89]: 주요 작업
+                  - generic [ref=e90]:
+                    - generic [ref=e91]: 코어 룰 기획
+                    - generic [ref=e92]: 시스템 기획
+                    - generic [ref=e93]: 시나리오 기획
+                    - generic [ref=e94]: PM
+                - generic [ref=e95]:
+                  - generic [ref=e96]: 코어루프
+                  - generic [ref=e97]: 무기교체
+                  - generic [ref=e98]: 맵프리팹
+                  - generic [ref=e99]: 절차적생성
+                - generic [ref=e100]:
+                  - generic [ref=e101]: 상세 보기
+                  - img [ref=e102]
+            - generic [ref=e105] [cursor=pointer]:
+              - img "침묵의 저택" [ref=e107]
+              - generic [ref=e109]:
+                - generic [ref=e111]: 메이플월드 출시
+                - heading "침묵의 저택" [level=3] [ref=e112]
+                - paragraph [ref=e115]: 횡스크롤 공포 게임의 코어 루프와 필요 시스템을 정의하고 각 파트를 팀원에게 분배·총괄했습니다.
+                - generic [ref=e116]:
+                  - paragraph [ref=e117]: 주요 작업
+                  - generic [ref=e118]:
+                    - generic [ref=e119]: 코어 룰 기획
+                    - generic [ref=e120]: 시스템 기획
+                    - generic [ref=e121]: PM
+                - generic [ref=e122]:
+                  - generic [ref=e123]: AI패턴
+                  - generic [ref=e124]: 시야축소
+                  - generic [ref=e125]: 상호작용
+                - generic [ref=e126]:
+                  - generic [ref=e127]: 상세 보기
+                  - img [ref=e128]
+            - generic [ref=e131] [cursor=pointer]:
+              - img "Pico-Bang!" [ref=e133]
+              - generic [ref=e135]:
+                - generic [ref=e137]: 프로토타입
+                - heading "Pico-Bang!" [level=3] [ref=e138]
+                - paragraph [ref=e141]: 바이브코딩으로 핵심 코어 루프를 직접 구현한 런앤건 프로토타입입니다.
+                - generic [ref=e142]:
+                  - paragraph [ref=e143]: 주요 작업
+                  - generic [ref=e144]:
+                    - generic [ref=e145]: 프로토타이핑
+                    - generic [ref=e146]: AI 활용
+                - generic [ref=e147]:
+                  - generic [ref=e148]: 바이브코딩
+                  - generic [ref=e149]: 유니티
+                  - generic [ref=e150]: 핵심루프
+                  - generic [ref=e151]: 빠른검증
+                - generic [ref=e152]:
+                  - generic [ref=e153]: 상세 보기
+                  - img [ref=e154]
+            - generic [ref=e157] [cursor=pointer]:
+              - img "게임 스토어의 불청객" [ref=e159]
+              - generic [ref=e161]:
+                - generic [ref=e163]: 제작 완료
+                - heading "게임 스토어의 불청객" [level=3] [ref=e164]
+                - paragraph [ref=e167]: LLM 기반 NPC 대화 시스템을 설계, NPC의 대사와 묘사에서 단서를 추리하는 비정형 시나리오를 구현했습니다.
+                - generic [ref=e168]:
+                  - paragraph [ref=e169]: 주요 작업
+                  - generic [ref=e170]:
+                    - generic [ref=e171]: AI 활용
+                    - generic [ref=e172]: 시스템 기획
+                    - generic [ref=e173]: 시나리오 기획
+                - generic [ref=e174]:
+                  - generic [ref=e175]: LLM프롬프트
+                  - generic [ref=e176]: 가변시나리오
+                  - generic [ref=e177]: 단서추출
+                - generic [ref=e178]:
+                  - generic [ref=e179]: 상세 보기
+                  - img [ref=e180]
+            - generic [ref=e183] [cursor=pointer]:
+              - img "AI 리뷰 데이터 분석" [ref=e185]
+              - generic [ref=e187]:
+                - generic [ref=e189]: 개인 프로젝트
+                - heading "AI 리뷰 데이터 분석" [level=3] [ref=e190]
+                - paragraph [ref=e193]: Steam 리뷰를 LLM으로 다차원 분석하고 표본 편향을 보정해, 실제 시장 반응과 개선 우선순위를 도출한 리뷰 인텔리전스 시스템입니다.
+                - generic [ref=e194]:
+                  - paragraph [ref=e195]: 주요 작업
+                  - generic [ref=e196]:
+                    - generic [ref=e197]: AI 활용
+                    - generic [ref=e198]: 데이터 분석
+                - generic [ref=e199]:
+                  - generic [ref=e200]: LLM 다차원분석
+                  - generic [ref=e201]: 표본설계
+                  - generic [ref=e202]: 편향보정
+                  - generic [ref=e203]: ABSA
+                  - generic [ref=e204]: FastAPI
+                - generic [ref=e205]:
+                  - generic [ref=e206]: 상세 보기
+                  - img [ref=e207]
+        - complementary [ref=e209]:
+          - generic [ref=e210]:
+            - generic [ref=e211]: 기획 영역
+            - generic [ref=e212]:
+              - button "전체 전체 프로젝트 전체 보기 6" [pressed] [ref=e213]:
+                - generic [ref=e215]: 전체
+                - generic [ref=e216]:
+                  - strong [ref=e217]: 전체
+                  - emphasis [ref=e218]: 프로젝트 전체 보기
+                - generic [ref=e219]: "6"
+              - button "01 밸런스 기획 수치, 보상, 성장 곡선 1" [ref=e220]:
+                - generic [ref=e221]: "01"
+                - generic [ref=e222]:
+                  - strong [ref=e223]: 밸런스 기획
+                  - emphasis [ref=e224]: 수치, 보상, 성장 곡선
+                - generic [ref=e225]: "1"
+              - button "02 시스템 기획 규칙, 흐름, 플레이 구조 4" [ref=e226]:
+                - generic [ref=e227]: "02"
+                - generic [ref=e228]:
+                  - strong [ref=e229]: 시스템 기획
+                  - emphasis [ref=e230]: 규칙, 흐름, 플레이 구조
+                - generic [ref=e231]: "4"
+              - button "03 코어 룰 기획 핵심 루프와 판단 기준 2" [ref=e232]:
+                - generic [ref=e233]: "03"
+                - generic [ref=e234]:
+                  - strong [ref=e235]: 코어 룰 기획
+                  - emphasis [ref=e236]: 핵심 루프와 판단 기준
+                - generic [ref=e237]: "2"
+              - button "04 프로토타이핑 검증 가능한 형태로 구현 1" [ref=e238]:
+                - generic [ref=e239]: "04"
+                - generic [ref=e240]:
+                  - strong [ref=e241]: 프로토타이핑
+                  - emphasis [ref=e242]: 검증 가능한 형태로 구현
+                - generic [ref=e243]: "1"
+              - button "05 AI 활용 제작 속도와 반복 개선 4" [ref=e244]:
+                - generic [ref=e245]: "05"
+                - generic [ref=e246]:
+                  - strong [ref=e247]: AI 활용
+                  - emphasis [ref=e248]: 제작 속도와 반복 개선
+                - generic [ref=e249]: "4"

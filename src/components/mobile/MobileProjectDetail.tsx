@@ -457,7 +457,7 @@ export const MobileProjectDetail = ({ project, onBack }: Props) => {
               <ListButton
                 onClick={() => {}}
                 icon={<ExternalLink strokeWidth={1.8} style={{ width: 16, height: 16, color: '#fff' }} />}
-                label="바로 체험하기"
+                label={project.externalCtaLabel || '바로 체험하기'}
                 primary
               />
             </a>

@@ -9,6 +9,7 @@ interface DashboardShellProps {
   resumeTab: 'resume' | 'cover-letter';
   setResumeTab: (tab: 'resume' | 'cover-letter') => void;
   onPdfDownload: () => void;
+  breadcrumbDetail?: string | null;
   children: React.ReactNode;
 }
 
@@ -31,46 +32,43 @@ export const DashboardShell = ({
   resumeTab,
   setResumeTab,
   onPdfDownload,
+  breadcrumbDetail,
   children,
 }: DashboardShellProps) => {
   const currentTitle = NAV_ITEMS.find((item) => item.id === currentView)?.title ?? '홈 화면';
-  const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(currentView === 'home');
-  const previousViewRef = React.useRef(currentView);
-  const sidebarExpandTimerRef = React.useRef<number | null>(null);
+  const [sidebarOverride, setSidebarOverride] = React.useState<{
+    view: DashboardView;
+    expanded: boolean;
+  } | null>(null);
+  const bodyRef = React.useRef<HTMLDivElement>(null);
+  const isSidebarExpanded = sidebarOverride?.view === currentView
+    ? sidebarOverride.expanded
+    : currentView === 'home';
+  const previousSidebarExpandedRef = React.useRef(isSidebarExpanded);
 
   React.useLayoutEffect(() => {
-    if (sidebarExpandTimerRef.current !== null) {
-      window.clearTimeout(sidebarExpandTimerRef.current);
-      sidebarExpandTimerRef.current = null;
-    }
+    const wasExpanded = previousSidebarExpandedRef.current;
+    previousSidebarExpandedRef.current = isSidebarExpanded;
 
-    if (currentView === 'home') {
-      if (previousViewRef.current === 'home') {
-        setIsSidebarExpanded(true);
-      } else {
-        sidebarExpandTimerRef.current = window.setTimeout(() => {
-          setIsSidebarExpanded(true);
-          sidebarExpandTimerRef.current = null;
-        }, 360);
-      }
-    } else {
-      setIsSidebarExpanded(false);
-    }
+    if (wasExpanded === isSidebarExpanded || !bodyRef.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    previousViewRef.current = currentView;
+    const offset = isSidebarExpanded ? -168 : 168;
+    const animation = bodyRef.current.animate(
+      [
+        { transform: `translateX(${offset}px)` },
+        { transform: 'translateX(0)' },
+      ],
+      {
+        duration: 140,
+        easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+      },
+    );
 
-    return () => {
-      if (sidebarExpandTimerRef.current !== null) {
-        window.clearTimeout(sidebarExpandTimerRef.current);
-        sidebarExpandTimerRef.current = null;
-      }
-    };
-  }, [currentView]);
+    return () => animation.cancel();
+  }, [isSidebarExpanded]);
 
   const handleNavClick = (view: DashboardView) => {
-    if (view !== 'home') {
-      setIsSidebarExpanded(false);
-    }
     onViewChange(view);
   };
 
@@ -80,7 +78,10 @@ export const DashboardShell = ({
         <button
           type="button"
           className="dashboard-menu-toggle"
-          onClick={() => setIsSidebarExpanded((expanded) => !expanded)}
+          onClick={() => setSidebarOverride({
+            view: currentView,
+            expanded: !isSidebarExpanded,
+          })}
           aria-label={isSidebarExpanded ? '메뉴 접기' : '메뉴 펼치기'}
         >
           <Menu className="w-6 h-6" />
@@ -109,11 +110,20 @@ export const DashboardShell = ({
         </div>
       </aside>
 
-      <div className="dashboard-body">
+      <div ref={bodyRef} className="dashboard-body">
         <header className="dashboard-header">
           <div className="dashboard-breadcrumb" aria-live="polite">
-            <span>포트폴리오 /</span>
-            <strong>{currentTitle}</strong>
+            <>
+              <span>포트폴리오</span>
+              <span>/</span>
+              {breadcrumbDetail ? <span>{currentTitle}</span> : <strong>{currentTitle}</strong>}
+            </>
+            {breadcrumbDetail && (
+              <>
+                <span>/</span>
+                <strong>{breadcrumbDetail}</strong>
+              </>
+            )}
           </div>
 
           {currentView === 'resume' && (

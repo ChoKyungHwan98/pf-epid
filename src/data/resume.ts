@@ -2,7 +2,7 @@ import type { ResumeData } from '../types';
 
 export const RESUME_DATA: ResumeData = {
   name: "조경환",
-  image: "./images/profile.jpg",
+  image: "./images/profile-web.webp",
   role: "게임 기획자 지망생",
   email: "ckh980624@gmail.com",
   phone: "010-4826-6256",
@@ -55,7 +55,7 @@ export const RESUME_DATA: ResumeData = {
     {
       title: "생성형 AI를 활용한 게임 기획자 과정",
       period: "2025.09 - 2026.04",
-      description: "실무 중심의 게임 기획 프로세스 전반을 이수했습니다.",
+      description: "",
       details: [
         "팀 프로젝트 3회 진행 (전 프로젝트 팀장)"
       ]
@@ -63,7 +63,7 @@ export const RESUME_DATA: ResumeData = {
     {
       title: "숭실대학교 법학과",
       period: "2017.02 - 2025.08",
-      description: "법학 답안 작성 훈련을 통해 기획 의도를 먼저 세우고 목차를 설계하는 능력을 단련했습니다.",
+      description: "",
       details: [
         "'의무이행소송의 성립여부 및 실익 검토' 논문 95점"
       ]
@@ -71,7 +71,7 @@ export const RESUME_DATA: ResumeData = {
     {
       title: "Shanghai Singapore International School",
       period: "2010.09 - 2014.01",
-      description: "중학교 과정 이수",
+      description: "",
       details: []
     }
   ],
@@ -99,8 +99,8 @@ export const RESUME_DATA: ResumeData = {
     }
   ],
   certificates: [
-    { name: "TOEIC", score: "800", date: "2023" },
-    { name: "TOEFL", score: "100", date: "2016" },
+    { name: "TOEIC", score: "800점대", date: "2023" },
+    { name: "TOEFL", score: "102점", date: "2016" },
     { name: "新HSK 5급", score: "183", date: "2015" }
   ],
   military: {
@@ -119,6 +119,8 @@ export const RESUME_DATA: ResumeData = {
     { name: "ChatGPT", description: "방대한 데이터 크롤링 및 분석을 통한 기획 소스 확보" },
     { name: "Gemini", description: "고도화된 프롬프트 엔지니어링을 활용해 기획에 필요한 핵심 로직 및 아이디어 즉각 생성" },
     { name: "Claude", description: "바이브코딩을 사용하여 복잡한 시스템 기획 사양의 코드 구현 및 검증" },
+    { name: "Hermes", description: "LLM 기반 아이디어 검토와 문서 초안 정리에 활용" },
+    { name: "Codex", description: "코드 기반 프로토타입 제작 및 기능 검증 보조에 활용" },
     { name: "Antigravity", description: "AI 에이전트를 통해 신속한 게임 프로토타입 제작 및 고도화" }
   ]
 };

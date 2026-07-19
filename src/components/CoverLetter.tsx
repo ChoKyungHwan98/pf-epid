@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, Plus, X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { EditableText } from './EditableText';
@@ -11,24 +11,34 @@ interface CoverLetterProps {
   isEditing: boolean;
   data: ResumeData;
   setData: (d: ResumeData) => void;
+  activeIndex: number;
+  onActiveIndexChange: (index: number) => void;
+  onNavigateIntro: (index: number) => void;
 }
 
-export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterProps) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-
+export const CoverLetter = ({
+  isEditing,
+  data,
+  setData,
+  activeIndex,
+  onActiveIndexChange,
+  onNavigateIntro,
+}: CoverLetterProps) => {
   useEffect(() => {
     if (!data.selfIntroductions) return;
-    
+
+    const scroller = document.querySelector<HTMLElement>('.resume-dashboard-layout.is-cover-letter .resume-main-column');
+    const observerRoot = scroller && scroller.scrollHeight > scroller.clientHeight + 1 ? scroller : null;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const index = parseInt(entry.target.id.replace('intro-', ''));
-            setActiveIndex(index);
+            onActiveIndexChange(index);
           }
         });
       },
-      { rootMargin: '-20% 0px -60% 0px', threshold: 0.1 }
+      { root: observerRoot, rootMargin: '-18% 0px -68% 0px', threshold: 0.05 }
     );
 
     data.selfIntroductions.forEach((_, idx) => {
@@ -37,20 +47,30 @@ export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterPr
     });
 
     return () => observer.disconnect();
-  }, [data.selfIntroductions]);
+  }, [data.selfIntroductions, onActiveIndexChange]);
 
   return (
     <div className="cover-letter-root w-full relative">
 
       {data.selfIntroductions ? (
         <div className="cover-letter-content-wrap ml-[4%] xl:ml-[6%] w-full max-w-[1200px]">
+        <label className="cover-letter-mobile-index">
+          <span>문항 이동</span>
+          <select value={activeIndex} onChange={(event) => onNavigateIntro(Number(event.target.value))}>
+            {data.selfIntroductions.map((intro, idx) => (
+              <option key={idx} value={idx}>
+                {String(idx + 1).padStart(2, '0')} {intro.navTitle || `문항 ${idx + 1}`}
+              </option>
+            ))}
+          </select>
+        </label>
+
         <div className="flex items-start gap-8 xl:gap-12">
 
-          {/* 메인 타임라인 */}
-          <div className="relative border-l-[3px] border-[#0047BB]/15 flex-1 min-w-0">
+          <div className="cover-letter-sections relative border-l-[3px] border-[#0047BB]/15 flex-1 min-w-0">
           {data.selfIntroductions.map((intro, idx) => (
             <React.Fragment key={idx}>
-              <article className="relative w-full pl-8 md:pl-16 pb-[80px] md:pb-[120px] scroll-mt-24 md:scroll-mt-[140px]" id={`intro-${idx}`}>
+              <article className="cover-letter-section relative w-full pl-8 md:pl-16 pb-[80px] md:pb-[120px] scroll-mt-24 md:scroll-mt-[140px]" id={`intro-${idx}`}>
                 {isEditing && (
                   <button onClick={() => { if (confirm("삭제하시겠습니까?")) { const n = [...(data.selfIntroductions || [])]; n.splice(idx, 1); setData({...data, selfIntroductions: n}); }}}
                     className="absolute -top-4 right-0 z-20 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg" title="삭제">
@@ -58,143 +78,52 @@ export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterPr
                   </button>
                 )}
 
-                <div className="absolute -left-[19px] md:-left-[24px] top-[50px] md:top-[68px] lg:top-[72px] w-9 h-9 md:w-11 md:h-11 bg-white border-[3px] border-[#0047BB]/30 rounded-full flex items-center justify-center text-[#0047BB] font-mono font-bold text-xs md:text-sm shadow-md ring-4 ring-white">
+                <div className="cover-letter-section-number absolute -left-[19px] md:-left-[24px] top-[50px] md:top-[68px] lg:top-[72px] w-9 h-9 md:w-11 md:h-11 bg-white border-[3px] border-[#0047BB]/30 rounded-full flex items-center justify-center text-[#0047BB] font-mono font-bold text-xs md:text-sm shadow-md ring-4 ring-white">
                   {String(idx + 1).padStart(2, '0')}
                 </div>
 
                 {/* 배경 카드 */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 60 }} 
+                  initial={{ opacity: 0, y: 20 }} 
                   whileInView={{ opacity: 1, y: 0 }} 
                   viewport={{ once: true, margin: "-50px" }} 
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="bg-white rounded-3xl border border-zinc-100 shadow-[0_8px_40px_-12px_rgba(0,71,187,0.08)] px-8 md:px-10 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16 mt-2"
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="cover-letter-section-surface bg-white rounded-3xl border border-zinc-100 shadow-[0_8px_40px_-12px_rgba(0,71,187,0.08)] px-8 md:px-10 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16 mt-2"
                 >
 
                   <motion.div 
                     initial={{ opacity: 0, y: 30 }} 
                     whileInView={{ opacity: 1, y: 0 }} 
                     viewport={{ once: true }} 
-                    transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                    className="mb-6 md:mb-8"
+                    transition={{ duration: 0.35, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+                    className="cover-letter-section-header mb-6 md:mb-8"
                   >
-                    <h3 className="text-[30px] md:text-[40px] lg:text-[44px] xl:text-[46px] font-display font-black text-[#1A1A1A] leading-[1.3] tracking-tighter break-keep [&_p]:m-0 [&_p]:leading-[1.3] [&_strong]:text-[#0047BB] [&_strong]:font-black text-opacity-90">
+                    <p className="cover-letter-section-label">
+                      <EditableText value={intro.navTitle} onSave={(v) => { const n = [...(data.selfIntroductions || [])]; n[idx].navTitle = v; setData({...data, selfIntroductions: n}); }} isEditing={isEditing} markdown={false} />
+                    </p>
+                    <h3 className="cover-letter-section-title text-[30px] md:text-[40px] lg:text-[44px] xl:text-[46px] font-display font-black text-[#1A1A1A] leading-[1.3] tracking-tighter break-keep [&_p]:m-0 [&_p]:leading-[1.3] [&_strong]:text-[#0047BB] [&_strong]:font-black text-opacity-90">
                       <EditableText value={intro.logline} onSave={(v) => { const n = [...(data.selfIntroductions || [])]; n[idx].logline = v; setData({...data, selfIntroductions: n}); }} isEditing={isEditing} markdown={true} />
                     </h3>
-                    {/* Ruled line — 에디토리얼 잡지 스타일 */}
-                    <motion.div
-                      initial={{ scaleX: 0 }}
-                      whileInView={{ scaleX: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      style={{ transformOrigin: 'left' }}
-                      className="mt-5 h-px bg-linear-to-r from-[#0047BB]/30 via-[#0047BB]/10 to-transparent"
-                    />
                   </motion.div>
 
                   <motion.div 
                     initial={{ opacity: 0, y: 20 }} 
                     whileInView={{ opacity: 1, y: 0 }} 
                     viewport={{ once: true }} 
-                    transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className={`max-w-[780px] text-[#1C1C1C] leading-[1.9] text-[16.5px] md:text-[18px] font-medium tracking-[-0.01em] [&_p]:mb-5 md:[&_p]:mb-7 [&_p]:break-keep [&_strong]:text-[#0047BB] [&_strong]:font-extrabold [&_strong]:bg-[linear-gradient(to_top,rgba(0,71,187,0.22)_50%,transparent_50%)] [&_strong]:px-[3px] [&_strong]:rounded-sm narrative-card`}
+                    transition={{ duration: 0.35, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    className="cover-letter-prose narrative-card"
                   >
-                    {idx === 0 && (
-                      <style dangerouslySetInnerHTML={{__html: `
-                        /* 1. Focus Reading Mode */
-                        .narrative-card {
-                          transition: color 0.4s ease;
-                        }
-                        .narrative-card:has(strong:hover) p,
-                        .narrative-card:has(strong:hover) blockquote,
-                        .narrative-card:has(strong:hover) li,
-                        .narrative-card:has(strong:hover) em {
-                          color: rgba(28, 28, 28, 0.2) !important;
-                          transition: color 0.4s ease;
-                        }
-                        
-                        /* Keep strongs fully visible and sharp */
-                        .narrative-card:has(strong:hover) strong {
-                          color: #0047BB !important;
-                          text-shadow: 0 0 1px rgba(0,71,187,0.1);
-                        }
-                        
-                        /* 3. Micro Breadcrumbs (Removed dots as requested) */
-                        .narrative-card strong {
-                          position: relative;
-                          transition: color 0.2s ease;
-                          cursor: crosshair;
-                        }
-                        
-                        /* 4. Markdown Blockquote Overrides */
-                        .narrative-card blockquote {
-                          border-left: 3px solid rgba(0, 71, 187, 0.3) !important;
-                          background-color: rgba(248, 249, 255, 0.5) !important;
-                          padding: 1.25rem 1.5rem !important;
-                          margin: 2rem 0 !important;
-                          border-radius: 0 0.75rem 0.75rem 0 !important;
-                        }
-                        @media (min-width: 768px) {
-                          .narrative-card blockquote {
-                            padding: 1.5rem 2rem !important;
-                          }
-                        }
-                        .narrative-card blockquote p {
-                          font-weight: 700 !important;
-                          font-size: 24px !important;
-                          line-height: 1.6 !important;
-                          color: #333F48 !important;
-                          letter-spacing: -0.025em !important;
-                          margin-bottom: 0 !important;
-                        }
-                        @media (min-width: 768px) {
-                          .narrative-card blockquote p {
-                            font-size: 27px !important;
-                          }
-                        }
-                        
-                        /* Hover interactions */
-                        .narrative-card strong:hover {
-                          color: #002A7A !important;
-                        }
-                        
-                        /* 5. Custom Logline inside Body (H3) */
-                        .narrative-card h3 {
-                          color: #1A1A1A;
-                          font-size: 32px;
-                          font-weight: 500;
-                          line-height: 1.3;
-                          letter-spacing: -0.04em;
-                          margin-top: 6rem;
-                          margin-bottom: 2.5rem;
-                          white-space: pre-wrap;
-                        }
-                        @media (min-width: 768px) {
-                          .narrative-card h3 {
-                            font-size: 42px;
-                            line-height: 1.25;
-                          }
-                        }
-                        .narrative-card h3 strong {
-                          color: #0047BB !important;
-                          font-weight: 800 !important;
-                          background: none !important;
-                          padding: 0 !important;
-                          font-size: inherit;
-                        }
-                      `}} />
-                    )}
                     {/* Hook */}
                     {isEditing && <div className="text-xs text-blue-500 font-bold mb-1">도입부 (Hook)</div>}
-                    <div className="mb-5 md:mb-7">
+                    <div className="cover-letter-hook mb-5 md:mb-7">
                       <EditableText value={intro.hook} onSave={(v) => { const n = [...(data.selfIntroductions || [])]; n[idx].hook = v; setData({...data, selfIntroductions: n}); }} isEditing={isEditing} markdown={true} />
                     </div>
 
                     {/* PullQuote */}
                     {(intro.pullQuote || isEditing) && (
-                      <div className="my-10 md:my-12">
+                      <div className="cover-letter-pullquote-wrap my-10 md:my-12">
                         {isEditing && <div className="text-xs text-blue-500 font-bold mb-1">인용구 (PullQuote)</div>}
-                        <blockquote className="border-l-[3px] border-[#0047BB]/30 bg-[#F8F9FF]/50 py-5 md:py-6 px-6 md:px-8 font-bold text-[24px] md:text-[27px] leading-[1.6] text-[#333F48] rounded-r-xl tracking-tight">
+                        <blockquote className="cover-letter-pullquote border-l-[3px] border-[#0047BB]/30 bg-[#F8F9FF]/50 py-5 md:py-6 px-6 md:px-8 font-bold text-[24px] md:text-[27px] leading-[1.6] text-[#333F48] rounded-r-xl tracking-tight">
                           <EditableText value={intro.pullQuote || ""} onSave={(v) => { const n = [...(data.selfIntroductions || [])]; n[idx].pullQuote = v; setData({...data, selfIntroductions: n}); }} isEditing={isEditing} markdown={false} />
                         </blockquote>
                       </div>
@@ -202,11 +131,11 @@ export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterPr
 
                     {/* Highlights */}
                     {(intro.highlights || isEditing) && (
-                      <div className="my-10 md:my-12">
+                      <div className="cover-letter-highlights-wrap my-10 md:my-12">
                         {isEditing && <div className="text-xs text-blue-500 font-bold mb-2">핵심 강조 수치 (Highlights) - 삭제는 빈칸으로 저장하세요</div>}
-                        <ul className="grid md:grid-cols-4 gap-3 md:gap-4 pl-0">
+                        <ul className="cover-letter-highlights grid md:grid-cols-4 gap-3 md:gap-4 pl-0">
                           {(intro.highlights || Array(4).fill({ bold: "", em: "" })).map((hl, hlIdx) => (
-                            <li key={hlIdx} className="list-none relative px-4 md:px-5 py-5 md:py-6 bg-[#F8F9FF] border border-[#0047BB]/15 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,71,187,0.08)] break-normal md:[&:not(:last-child)]::after:content-[''] md:[&:not(:last-child)]::after:absolute md:[&:not(:last-child)]::after:-right-[14px] md:[&:not(:last-child)]::after:top-1/2 md:[&:not(:last-child)]::after:-translate-y-1/2 md:[&:not(:last-child)]::after:border-t-[2.5px] md:[&:not(:last-child)]::after:border-r-[2.5px] md:[&:not(:last-child)]::after:border-[#0047BB]/40 md:[&:not(:last-child)]::after:w-[10px] md:[&:not(:last-child)]::after:h-[10px] md:[&:not(:last-child)]::after:rotate-45">
+                            <li key={hlIdx} className="cover-letter-highlight list-none relative px-4 md:px-5 py-5 md:py-6 bg-[#F8F9FF] border border-[#0047BB]/15 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,71,187,0.08)] break-normal">
                               <strong className="text-[#0047BB] font-black text-[15px] md:text-[18px] block mb-2 px-0 bg-none!">
                                 <EditableText value={hl.bold} onSave={(v) => { const n = [...(data.selfIntroductions || [])]; if(!n[idx].highlights) n[idx].highlights = Array(4).fill({bold:"", em:""}); n[idx].highlights![hlIdx] = { ...n[idx].highlights![hlIdx], bold: v }; setData({...data, selfIntroductions: n}); }} isEditing={isEditing} markdown={false} />
                               </strong>
@@ -221,7 +150,7 @@ export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterPr
 
                     {/* Body */}
                     {isEditing && <div className="text-xs text-blue-500 font-bold mb-1">본문 (Body)</div>}
-                    <div className="mb-5 md:mb-7">
+                    <div className="cover-letter-body mb-5 md:mb-7">
                       <EditableText value={intro.body} onSave={(v) => { const n = [...(data.selfIntroductions || [])]; n[idx].body = v; setData({...data, selfIntroductions: n}); }} isEditing={isEditing} markdown={true} />
                     </div>
 
@@ -233,7 +162,7 @@ export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterPr
                       </>
                     ) : (
                       intro.closing && (
-                        <div className="mt-8">
+                        <div className="cover-letter-closing mt-8">
                           <EditableText value={intro.closing || ""} onSave={(v) => {}} isEditing={isEditing} markdown={true} />
                         </div>
                       )
@@ -241,7 +170,7 @@ export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterPr
 
                     {/* Hardcoded Q5 Part 2 (AI Prototyping) */}
                     {idx === 4 && !isEditing && (
-                      <div className="mt-4 pt-8 border-t-[1.5px] border-zinc-100/80">
+                      <div className="cover-letter-extra mt-4 pt-8 border-t-[1.5px] border-zinc-100/80">
                         <motion.div 
                           initial={{ opacity: 0, y: 30 }} 
                           whileInView={{ opacity: 1, y: 0 }} 
@@ -276,7 +205,7 @@ export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterPr
                 {/* 섹션 사이 희미한 구분선 (마지막 항목 제외) */}
 
                 {idx < (data.selfIntroductions || []).length - 1 && (
-                  <div className="absolute bottom-10 left-8 md:left-16 right-0 h-px bg-linear-to-r from-[#0047BB]/10 via-[#0047BB]/5 to-transparent" />
+                  <div className="cover-letter-section-divider absolute bottom-10 left-8 md:left-16 right-0 h-px bg-linear-to-r from-[#0047BB]/10 via-[#0047BB]/5 to-transparent" />
                 )}
               </article>
 
@@ -287,41 +216,12 @@ export const CoverLetter = ({ setView, isEditing, data, setData }: CoverLetterPr
 
           {isEditing && (
             <button onClick={() => { const n = [...(data.selfIntroductions || [])]; n.push({ navTitle: "새 항목", logline: "새로운 항목의 로그라인을 입력하세요.", hook: "도입부를 입력하세요.", body: "본문을 입력하세요." }); setData({...data, selfIntroductions: n}); }}
-              className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-200 bg-zinc-50 hover:bg-zinc-100 transition-colors min-h-[200px] cursor-pointer rounded-3xl w-full">
+              className="cover-letter-add flex flex-col items-center justify-center border-2 border-dashed border-zinc-200 bg-zinc-50 hover:bg-zinc-100 transition-colors min-h-[200px] cursor-pointer rounded-3xl w-full">
               <Plus className="w-8 h-8 text-zinc-400 mb-2" />
               <span className="text-zinc-500 font-bold">새 자기소개 항목 추가</span>
             </button>
           )}
           </div>
-
-          {/* INDEX 사이드바 */}
-          <motion.aside 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="cover-letter-native-index hidden xl:block sticky top-40 w-44 shrink-0"
-          >
-            <div className="flex flex-col gap-6 border-l-2 border-[#0047BB]/10 pl-6 py-2">
-              <div className="text-xs font-black tracking-[0.2em] text-[#0047BB]/60 mb-2">INDEX</div>
-              {data.selfIntroductions.map((intro, idx) => {
-                const isActive = activeIndex === idx;
-                return (
-                  <a 
-                    key={idx} 
-                    href={`#intro-${idx}`} 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById(`intro-${idx}`)?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className={`text-[14px] font-medium transition-colors relative group block ${isActive ? 'text-[#0047BB]' : 'text-zinc-400 hover:text-[#0047BB]'}`}
-                  >
-                    <span className={`absolute -left-[29px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#0047BB] transition-opacity ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}/>
-                    {String(idx + 1).padStart(2, '0')}. {intro.navTitle || '섹션 ' + (idx + 1)}
-                  </a>
-                );
-              })}
-            </div>
-          </motion.aside>
 
         </div>
         </div>

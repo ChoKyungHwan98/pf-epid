@@ -30,12 +30,14 @@
 
         #game-wrapper {
             position: relative;
+            flex: 0 0 auto;
             width: 450px;
             height: 750px;
             background-color: #0a0a0a;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
             border: 2px solid #333;
             overflow: hidden;
+            transform-origin: center center;
         }
 
         canvas {
@@ -2145,6 +2147,23 @@
     </div>
 
     <script>
+        const gameWrapper = document.getElementById('game-wrapper');
+        const fitGameToViewport = () => {
+            const framePadding = 16;
+            const baseWidth = 454;
+            const baseHeight = 754;
+            const scale = Math.min(
+                (window.innerWidth - framePadding * 2) / baseWidth,
+                (window.innerHeight - framePadding * 2) / baseHeight,
+                1
+            );
+
+            gameWrapper.style.transform = `scale(${Math.max(scale, 0.2)})`;
+        };
+
+        window.addEventListener('resize', fitGameToViewport);
+        fitGameToViewport();
+
         const CFG = {
             canvasW: 450, canvasH: 680,
             colors: { player: '#4a90e2', fairy: '#00ffff', enemy: '#e74c3c', boss: '#8b0000', gold: '#ffd700' },
@@ -3241,14 +3260,18 @@
                 const start = (x, y) => {
                     if (this.isGameOver) return;
                     const r = this.canvas.getBoundingClientRect();
+                    const scaleX = this.canvas.width / r.width;
+                    const scaleY = this.canvas.height / r.height;
                     this.input.active = true;
-                    this.input.ox = x - r.left; this.input.oy = y - r.top;
+                    this.input.ox = (x - r.left) * scaleX; this.input.oy = (y - r.top) * scaleY;
                     this.input.cx = this.input.ox; this.input.cy = this.input.oy;
                 };
                 const move = (x, y) => {
                     if (!this.input.active) return;
                     const r = this.canvas.getBoundingClientRect();
-                    this.input.cx = x - r.left; this.input.cy = y - r.top;
+                    const scaleX = this.canvas.width / r.width;
+                    const scaleY = this.canvas.height / r.height;
+                    this.input.cx = (x - r.left) * scaleX; this.input.cy = (y - r.top) * scaleY;
                     const dx = this.input.cx - this.input.ox; const dy = this.input.cy - this.input.oy;
                     const dist = Math.min(Math.hypot(dx, dy), 50);
                     const angle = Math.atan2(dy, dx);

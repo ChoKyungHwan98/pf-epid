@@ -1,0 +1,984 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-jm6w7tvs> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><!-- Early connection hints for third-party origins --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="dns-prefetch" href="https://s.nitropay.com"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><!-- Inter font (moved out of global.css @import to avoid render-blocking chain) --><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"><link rel="icon" type="image/svg+xml" href="/sefhi.png"><link rel="sitemap" href="/sitemap-index.xml"><link rel="canonical" href="https://lootandwaifus.com/trickcal-skin-pack-viewer/"><meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"><meta name="description" content="Trickcal Chibi Go skin packs preview page with all skins displayed side by side."><meta name="author" content="Loot & Waifus"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://lootandwaifus.com/trickcal-skin-pack-viewer/"><meta property="og:locale" content="en_US"><meta property="og:title" content="Trickcal Skin Pack Viewer"><meta property="og:description" content="Trickcal Chibi Go skin packs preview page with all skins displayed side by side."><meta property="og:site_name" content="Loot & Waifus"><!-- Twitter --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:url" content="https://lootandwaifus.com/trickcal-skin-pack-viewer/"><meta name="twitter:title" content="Trickcal Skin Pack Viewer"><meta name="twitter:description" content="Trickcal Chibi Go skin packs preview page with all skins displayed side by side."><title>Trickcal Skin Pack Viewer</title><!-- nitropay --><script data-cfasync="false">window.nitroAds=window.nitroAds||{createAd:function(){return new Promise(e=>{window.nitroAds.queue.push(["createAd",arguments,e])})},addUserToken:function(){window.nitroAds.queue.push(["addUserToken",arguments])},queue:[]};</script><script data-cfasync="false" async src="https://s.nitropay.com/ads-2029.js"></script><!-- Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=G-HXWCG1EYHV"></script><script type="module" src="/entry.ZOEwH2IW.js"></script><!-- Remix icons --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.min.css" crossorigin=""><!-- User settings bootstrap: reads the lw_settings cookie and applies it
+         before the body paints (no flash). Exposes window.LWSettings for the
+         settings modal. define:vars keeps this inline and passes the category. --><script>(function(){const lwCategory = "TRICKCAL";
+
+      window.LWSettings = (function () {
+        const DEFAULTS = {
+          general: { hideTopAd: false, disableLandingVideos: false, hideCarousels: false },
+          nikke: {
+            defaultSkillLevel: 1,
+            favoriteItems: false,
+            showAssetIcon: false,
+            // Default section order (must match the DOM order on the page).
+            order: ["skills", "skill-recommendations", "build", "pros-cons", "notes", "raid-usage"],
+            sections: {
+              "skills": true,
+              "skill-recommendations": true,
+              "build": true,
+              "pros-cons": true,
+              "notes": true,
+              "raid-usage": true,
+            },
+          },
+          trickcal: {
+            defaultSkillLevel: 1,
+            order: ["skills", "skill-priority", "yearning", "artifacts", "foods-aclub", "spine-player"],
+            sections: {
+              "skills": true,
+              "skill-priority": true,
+              "yearning": true,
+              "artifacts": true,
+              "foods-aclub": true,
+              "spine-player": true,
+            },
+          },
+          // defaultSkillRarity must be one of the SKILL_RARITIES labels in
+          // sxsDatabase.astro (Rare, Epic, Legendary, Mythic, Divine, Immortal).
+          swordxstaff: { hideTwSkills: false, defaultSkillRarity: "Epic" },
+          mad: {
+            order: ["skills", "notes", "gifts", "mad-spine-player"],
+            sections: {
+              "skills": true,
+              "notes": true,
+              "gifts": true,
+              "mad-spine-player": true,
+            },
+          },
+        };
+        // Maps a navbar category to its settings key.
+        const SECTION_KEYS = { NIKKE: "nikke", TRICKCAL: "trickcal", MAD: "mad" };
+
+        function deepMerge(base, over) {
+          const out = Array.isArray(base) ? base.slice() : Object.assign({}, base);
+          for (const k in over) {
+            if (
+              over[k] && typeof over[k] === "object" && !Array.isArray(over[k]) &&
+              out[k] && typeof out[k] === "object"
+            ) {
+              out[k] = deepMerge(out[k], over[k]);
+            } else {
+              out[k] = over[k];
+            }
+          }
+          return out;
+        }
+
+        function read() {
+          try {
+            const m = document.cookie.match(/(?:^|;\s*)lw_settings=([^;]+)/);
+            if (!m) return deepMerge(DEFAULTS, {});
+            return deepMerge(DEFAULTS, JSON.parse(decodeURIComponent(m[1])));
+          } catch (e) {
+            return deepMerge(DEFAULTS, {});
+          }
+        }
+
+        function write(s) {
+          const exp = new Date(Date.now() + 365 * 24 * 3600 * 1000).toUTCString();
+          document.cookie =
+            "lw_settings=" + encodeURIComponent(JSON.stringify(s)) +
+            "; expires=" + exp + "; path=/; SameSite=Lax";
+        }
+
+        function buildCss(s) {
+          let css = "";
+          if (s.general && s.general.hideTopAd) css += ".pm-container{display:none !important;}";
+          // Landing page: hide the video so the game card's fallback background
+          // art shows through instead (the sources are stripped separately).
+          if (s.general && s.general.disableLandingVideos) css += ".games .game video{display:none !important;}";
+          // Game pages: drop the latest-characters carousel from the hero and
+          // shrink the hero to the same size it uses when it has no carousel.
+          if (s.general && s.general.hideCarousels) {
+            css += ".hero-carousel{display:none !important;}" +
+              ".hero:has(.hero-carousel){height:20vh !important;min-height:120px !important;margin-top:5vh !important;}";
+          }
+          // Sword x Staff: skills that only exist on the TW server are tagged
+          // with data-server="TW" on their database card.
+          if (s.swordxstaff && s.swordxstaff.hideTwSkills) css += '.db-card[data-server="TW"]{display:none !important;}';
+          const gkey = SECTION_KEYS[lwCategory];
+          if (gkey && s[gkey] && s[gkey].sections) {
+            const secs = s[gkey].sections;
+            for (const id in secs) {
+              if (!secs[id]) {
+                css += "#" + id + ", .section-block:has(#" + id + "){display:none !important;}";
+              }
+            }
+          }
+          return css;
+        }
+
+        function applyCss(s) {
+          s = s || read();
+          let el = document.getElementById("lw-settings-style");
+          if (!el) {
+            el = document.createElement("style");
+            el.id = "lw-settings-style";
+            document.head.appendChild(el);
+          }
+          el.textContent = buildCss(s);
+        }
+
+        function applySkillLevels(s) {
+          s = s || read();
+          const gkey = SECTION_KEYS[lwCategory];
+          if (!gkey || !s[gkey] || !s[gkey].defaultSkillLevel) return;
+          const level = s[gkey].defaultSkillLevel || 1;
+          document.querySelectorAll(".skills-section .tab-content").forEach(function (tc) {
+            const btns = tc.querySelectorAll(".level-button");
+            if (!btns.length) return;
+            const idx = Math.min(Math.max(level - 1, 0), btns.length - 1);
+            const target = String(idx);
+            btns.forEach(function (b) {
+              const bl = parseInt(b.getAttribute("data-level") || "0", 10);
+              b.classList.toggle("active", bl <= idx);
+            });
+            tc.querySelectorAll(".level-description").forEach(function (p) {
+              p.classList.toggle("active", p.getAttribute("data-level") === target);
+            });
+            tc.querySelectorAll(".status-level").forEach(function (p) {
+              p.classList.toggle("active", p.getAttribute("data-level") === target);
+            });
+          });
+        }
+
+        // NIKKE only: load Favorite Item (treasure) stats/skills by default for
+        // characters that have one. Reuses the character page's own treasure
+        // toggle so the swap logic stays in one place. Returns true if it
+        // changed the toggle state.
+        function applyFavoriteItems(s) {
+          s = s || read();
+          if (lwCategory !== "NIKKE") return false;
+          const toggle = document.getElementById("treasure-toggle-input");
+          if (!toggle) return false;
+          const want = !!s.nikke.favoriteItems;
+          if (toggle.checked !== want) {
+            toggle.checked = want;
+            toggle.dispatchEvent(new Event("change"));
+            return true;
+          }
+          return false;
+        }
+
+        // Reconcile a saved order with the canonical default order: keep saved
+        // ids that still exist, drop unknown ones, append any new canonical ids.
+        function resolveOrder(gkey, s) {
+          const canonical = (DEFAULTS[gkey] && DEFAULTS[gkey].order) || [];
+          let order = (s[gkey] && s[gkey].order) ? s[gkey].order.slice() : canonical.slice();
+          order = order.filter(function (id) { return canonical.indexOf(id) !== -1; });
+          canonical.forEach(function (id) { if (order.indexOf(id) === -1) order.push(id); });
+          return order;
+        }
+
+        // Reorder the character-page section blocks to match the saved order.
+        // Every managed section is a sibling inside `.guide-content`, so we
+        // regroup them at the position of the first one.
+        function applyOrder(s) {
+          s = s || read();
+          const gkey = SECTION_KEYS[lwCategory];
+          if (!gkey || !s[gkey]) return;
+          const content = document.querySelector(".guide-content");
+          if (!content) return;
+          const order = resolveOrder(gkey, s);
+          // Resolve each id to the block that is a direct child of `.guide-content`.
+          const blocks = [];
+          order.forEach(function (id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let block = el;
+            while (block.parentElement && block.parentElement !== content) block = block.parentElement;
+            if (block.parentElement === content && blocks.indexOf(block) === -1) blocks.push(block);
+          });
+          if (blocks.length < 2) return;
+          // Anchor at the earliest block's current DOM position.
+          let anchorRef = null;
+          const children = Array.prototype.slice.call(content.children);
+          for (let i = 0; i < children.length; i++) {
+            if (blocks.indexOf(children[i]) !== -1) { anchorRef = children[i]; break; }
+          }
+          if (!anchorRef) return;
+          const marker = document.createComment("lw-order");
+          content.insertBefore(marker, anchorRef);
+          blocks.forEach(function (b) { b.remove(); });
+          blocks.forEach(function (b) { content.insertBefore(b, marker); });
+          marker.remove();
+        }
+
+        // NIKKE only: show the character's asset art at rest instead of only
+        // on hover. The character-info hover handler reads `data-asset-default`
+        // live to decide the resting/hover images, so we just flip that flag
+        // and set the current src.
+        function applyAssetIcon(s) {
+          s = s || read();
+          if (lwCategory !== "NIKKE") return;
+          const icon = document.querySelector(".character-info .icon");
+          if (!icon) return;
+          const asset = icon.getAttribute("data-hover-src");
+          const portrait = icon.getAttribute("data-default-src");
+          if (!asset) return;
+          const want = !!s.nikke.showAssetIcon;
+          icon.dataset.assetDefault = want ? "1" : "";
+          icon.src = want ? asset : (portrait || icon.src);
+        }
+
+        // Landing page only: strip the <source> off each game card's looping
+        // video so it never downloads, and restore it when the setting is
+        // turned back off. buildCss hides the element itself.
+        function applyLandingVideos(s) {
+          s = s || read();
+          const off = !!(s.general && s.general.disableLandingVideos);
+          document.querySelectorAll(".games .game video").forEach(function (v) {
+            const source = v.querySelector("source");
+            if (!source) return;
+            if (off) {
+              if (!v.dataset.lwSrc && source.getAttribute("src")) {
+                v.dataset.lwSrc = source.getAttribute("src");
+              }
+              source.removeAttribute("src");
+              v.removeAttribute("autoplay");
+              v.pause();
+              v.load();
+            } else if (v.dataset.lwSrc) {
+              source.setAttribute("src", v.dataset.lwSrc);
+              delete v.dataset.lwSrc;
+              v.setAttribute("autoplay", "");
+              v.load();
+              const p = v.play();
+              if (p && p.catch) p.catch(function () {});
+            }
+          });
+        }
+
+        const api = {
+          DEFAULTS: DEFAULTS,
+          SECTION_KEYS: SECTION_KEYS,
+          category: lwCategory,
+          read: read,
+          write: write,
+          buildCss: buildCss,
+          applyCss: applyCss,
+          resolveOrder: resolveOrder,
+          applyOrder: applyOrder,
+          applySkillLevels: applySkillLevels,
+          applyFavoriteItems: applyFavoriteItems,
+          applyAssetIcon: applyAssetIcon,
+          applyLandingVideos: applyLandingVideos,
+        };
+
+        // Hide sections immediately so nothing flashes in.
+        applyCss();
+
+        // The videos must lose their source while the body is still parsing,
+        // otherwise the browser has already started fetching them by the time
+        // DOMContentLoaded fires.
+        if (read().general.disableLandingVideos && document.readyState === "loading") {
+          const obs = new MutationObserver(function () { applyLandingVideos(); });
+          obs.observe(document.documentElement, { childList: true, subtree: true });
+          document.addEventListener("DOMContentLoaded", function () { obs.disconnect(); });
+        }
+
+        // Skill levels / favorite items / order need the DOM; apply when ready.
+        function onReady() {
+          applyOrder();
+          applySkillLevels();
+          applyAssetIcon();
+          applyLandingVideos();
+          // The favorite-item swap depends on the character page's own change
+          // handler (wired on DOMContentLoaded). Defer a tick so it's attached,
+          // then re-apply skill levels since the swap resets them.
+          setTimeout(function () {
+            if (applyFavoriteItems()) applySkillLevels();
+          }, 0);
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", onReady);
+        } else {
+          onReady();
+        }
+
+        return api;
+      })();
+    })();</script><link rel="stylesheet" href="/assets/asset.Dys8VNk-.css">
+<link rel="stylesheet" href="/assets/asset.B29YBHQr.css">
+<link rel="stylesheet" href="/assets/asset.Gakea3xM.css">
+<link rel="stylesheet" href="/assets/asset.B95BV_ii.css">
+<link rel="stylesheet" href="/assets/asset.CKTwKUAf.css">
+<link rel="stylesheet" href="/assets/asset.DnjK-YH-.css">
+<link rel="stylesheet" href="/assets/asset.CPunRI1N.css">
+<link rel="stylesheet" href="/assets/asset.y_ZwAKsA.css">
+<link rel="stylesheet" href="/assets/asset.LvwwRVV1.css">
+<link rel="stylesheet" href="/assets/asset.CcggUmf1.css">
+<link rel="stylesheet" href="/assets/asset.DksX3kY_.css">
+<link rel="stylesheet" href="/assets/asset.B3kXcsgS.css">
+<link rel="stylesheet" href="/assets/asset.baT-pF1e.css">
+<link rel="stylesheet" href="/assets/asset.NQBUiT7h.css">
+<link rel="stylesheet" href="/assets/asset.DjolhEm7.css">
+<link rel="stylesheet" href="/assets/asset.QupbmykF.css">
+<link rel="stylesheet" href="/assets/asset.Bqr89pdO.css">
+<link rel="stylesheet" href="/assets/asset.CXr6V-wo.css">
+<link rel="stylesheet" href="/assets/asset.CvkfqY-p.css">
+<link rel="stylesheet" href="/assets/asset.CnHQfYxs.css">
+<link rel="stylesheet" href="/assets/asset.CDOVOkTE.css"><script type="module" src="/entry.V2R8AmkL.js"></script></head> <body data-astro-cid-jm6w7tvs> <div class="timers-bar" id="timers-bar" data-category="TRICKCAL" data-astro-cid-za7c357j><div class="timers-container" data-astro-cid-za7c357j><a href="https://lootbar.gg/shop/sefhi" target="_blank" rel="noopener noreferrer" class="timer-banner" draggable="false" data-astro-cid-za7c357j><img src="/general-topup.png" alt="Gacha top up platform" draggable="false" decoding="async" data-astro-cid-za7c357j></a><div class="timer-item" data-timer-id="tig-2026-07-16T12:00:00+02:00" data-astro-cid-za7c357j><div class="timer-icon" data-astro-cid-za7c357j><img src="/characters/trickcal/tig.webp" alt="Tig banner" draggable="false" width="48" height="48" decoding="async" data-astro-cid-za7c357j></div><div class="timer-content" data-astro-cid-za7c357j><div class="timer-title" data-astro-cid-za7c357j>Tig banner</div><div class="timer-countdown" data-start="2026-07-16T12:00:00+02:00" data-end="2026-07-30T03:59:00+02:00" data-astro-cid-za7c357j><span class="countdown-text" data-astro-cid-za7c357j>Loading...</span><div class="timer-progress" data-astro-cid-za7c357j><div class="timer-progress-bar" style="width: 0%" data-astro-cid-za7c357j></div></div></div></div></div><div class="timer-item" data-timer-id="daya-2026-07-16T12:00:00+02:00" data-astro-cid-za7c357j><div class="timer-icon" data-astro-cid-za7c357j><img src="/characters/trickcal/daya.webp" alt="Daya banner" draggable="false" width="48" height="48" decoding="async" data-astro-cid-za7c357j></div><div class="timer-content" data-astro-cid-za7c357j><div class="timer-title" data-astro-cid-za7c357j>Daya banner</div><div class="timer-countdown" data-start="2026-07-16T12:00:00+02:00" data-end="2026-07-30T03:59:00+02:00" data-astro-cid-za7c357j><span class="countdown-text" data-astro-cid-za7c357j>Loading...</span><div class="timer-progress" data-astro-cid-za7c357j><div class="timer-progress-bar" style="width: 0%" data-astro-cid-za7c357j></div></div></div></div></div><div class="timer-item" data-timer-id="rudd-2026-07-22T21:00:00+02:00" data-astro-cid-za7c357j><div class="timer-icon" data-astro-cid-za7c357j><img src="/characters/trickcal/rude.webp" alt="Rudd banner" draggable="false" width="48" height="48" decoding="async" data-astro-cid-za7c357j></div><div class="timer-content" data-astro-cid-za7c357j><div class="timer-title" data-astro-cid-za7c357j>Rudd banner</div><div class="timer-countdown" data-start="2026-07-22T21:00:00+02:00" data-end="2026-07-30T03:59:00+02:00" data-astro-cid-za7c357j><span class="countdown-text" data-astro-cid-za7c357j>Loading...</span><div class="timer-progress" data-astro-cid-za7c357j><div class="timer-progress-bar" style="width: 0%" data-astro-cid-za7c357j></div></div></div></div></div></div></div><script type="module" src="/entry.TuXqIYYw.js"></script> <nav class="navbar" data-astro-cid-e2g5kknj> <div class="nav-inner" data-astro-cid-e2g5kknj> <div class="nav-logo-wrapper has-logo-dropdown" data-astro-cid-e2g5kknj>  <a href="/trickcal-chibi-go" class="nav-logo logo-dropdown-trigger" data-astro-cid-e2g5kknj> <img src="/trickcal.webp" alt="Trickcal" class="game-logo" width="40" height="40" decoding="async" data-astro-cid-e2g5kknj> <span data-astro-cid-e2g5kknj>Trickcal</span> <i class="ri-arrow-down-s-line logo-dropdown-arrow" data-astro-cid-e2g5kknj></i> </a> <ul class="logo-dropdown" data-astro-cid-e2g5kknj> <li class="logo-dropdown-home" data-astro-cid-e2g5kknj> <a href="/" data-astro-cid-e2g5kknj> <i class="ri-home-4-line" data-astro-cid-e2g5kknj></i>
+Back to homepage
+</a> </li> <li data-astro-cid-e2g5kknj> <a href="/nikke" class="logo-dropdown-game" style="--game-bg: url(/nikke.webp)" data-astro-cid-e2g5kknj> <span class="logo-dropdown-game-name" data-astro-cid-e2g5kknj>NIKKE</span> </a> </li><li data-astro-cid-e2g5kknj> <a href="/sword-x-staff" class="logo-dropdown-game" style="--game-bg: url(/swordstaff.webp)" data-astro-cid-e2g5kknj> <span class="logo-dropdown-game-name" data-astro-cid-e2g5kknj>Sword x Staff</span> </a> </li><li data-astro-cid-e2g5kknj> <a href="/trickcal-chibi-go" class="logo-dropdown-game active-game" style="--game-bg: url(/trickcal.webp)" data-astro-cid-e2g5kknj> <span class="logo-dropdown-game-name" data-astro-cid-e2g5kknj>Trickcal</span> </a> </li><li data-astro-cid-e2g5kknj> <a href="/make-drama-mad" class="logo-dropdown-game" style="--game-bg: url(/mad.webp)" data-astro-cid-e2g5kknj> <span class="logo-dropdown-game-name" data-astro-cid-e2g5kknj>MAD</span> </a> </li> </ul>  </div> <button class="nav-toggle" id="nav-toggle" data-astro-cid-e2g5kknj> <span data-astro-cid-e2g5kknj></span> </button> <ul class="nav-links" id="nav-links" data-astro-cid-e2g5kknj> <li class="has-submenu has-wide-submenu " data-astro-cid-e2g5kknj> <a href="/trickcal-chibi-go" class="submenu-trigger" data-astro-cid-e2g5kknj> <i class="ri-book-open-line" data-astro-cid-e2g5kknj></i> Guides <i class="ri-arrow-down-s-line submenu-arrow" data-astro-cid-e2g5kknj></i> </a>  <div class="submenu-wide-wrapper" data-astro-cid-e2g5kknj> <div class="submenu submenu-wide" data-astro-cid-e2g5kknj> <div class="submenu-row" data-astro-cid-e2g5kknj> <h4 class="submenu-row-title" data-astro-cid-e2g5kknj>Cheeky Tools</h4> <ul class="submenu-row-items" data-astro-cid-e2g5kknj> <li data-astro-cid-e2g5kknj> <a href="/trickcal-chibi-go-banner-history" data-astro-cid-e2g5kknj>Banner history</a> </li><li data-astro-cid-e2g5kknj> <a href="/trickcal-skin-pack-viewer" data-astro-cid-e2g5kknj>Skin packs</a> </li><li data-astro-cid-e2g5kknj> <a href="/trickcal-chibi-go-team-builder" data-astro-cid-e2g5kknj>Team builder</a> </li><li data-astro-cid-e2g5kknj> <a href="/trickcal-chibi-go-favorite-foods" data-astro-cid-e2g5kknj>Food &amp; Fab Lab database</a> </li><li data-astro-cid-e2g5kknj> <a href="/trickcal-fab-lab-calculator" data-astro-cid-e2g5kknj>Fab Lab resource calculator</a> </li><li data-astro-cid-e2g5kknj> <a href="/trickcal-chibi-go-custom-tier-list" data-astro-cid-e2g5kknj>Make your own tier list</a> </li> </ul> </div><div class="submenu-row" data-astro-cid-e2g5kknj> <h4 class="submenu-row-title" data-astro-cid-e2g5kknj>New players</h4> <ul class="submenu-row-items" data-astro-cid-e2g5kknj> <li data-astro-cid-e2g5kknj> <a href="/trickcal-chibi-go-reroll-guide" data-astro-cid-e2g5kknj>Reroll guide</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/dont-upgrade-your-gear-trickcal-revive-gear-guide" data-astro-cid-e2g5kknj>Understanding gear in Trickcal</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/gacha-system-trickcal-revive" data-astro-cid-e2g5kknj>Gacha system</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/trickcal-chibi-go-combat-power-and-how-to-get-stronger" data-astro-cid-e2g5kknj>Combat Power and how to get stronger</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/trickcal-chibi-go-yggdrasil-dig-site-teams" data-astro-cid-e2g5kknj>Yggdrasil Dig Site teams</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/trickcal-personality-and-race-bonuses" data-astro-cid-e2g5kknj>Personality and Race bonuses</a> </li> </ul> </div><div class="submenu-row" data-astro-cid-e2g5kknj> <h4 class="submenu-row-title" data-astro-cid-e2g5kknj>General guides</h4> <ul class="submenu-row-items" data-astro-cid-e2g5kknj> <li data-astro-cid-e2g5kknj> <a href="/guides/boards-tips-tricks-trickcal-revive" data-astro-cid-e2g5kknj>Boards tips &amp; tricks</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/general-shop-trickcal-revive" data-astro-cid-e2g5kknj>General shop</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/pvp-101-trickcal-revive" data-astro-cid-e2g5kknj>PVP 101</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/spenders-guide-trickcal-revive" data-astro-cid-e2g5kknj>Spender’s guide</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/trickcal-chibi-go-adventure-guide" data-astro-cid-e2g5kknj>Adventure Club (A-Club)</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/trickcal-chibi-go-clone-factory-priority" data-astro-cid-e2g5kknj>Clone Factory priority</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/trickcal-yearning-system-explained" data-astro-cid-e2g5kknj>Yearnings explained</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/where-to-spend-star-candy-trickcal" data-astro-cid-e2g5kknj>Where to spend Star Candy</a> </li> </ul> </div><div class="submenu-row" data-astro-cid-e2g5kknj> <h4 class="submenu-row-title" data-astro-cid-e2g5kknj>TC &amp; notes</h4> <ul class="submenu-row-items" data-astro-cid-e2g5kknj> <li data-astro-cid-e2g5kknj> <a href="/guides/trickcal-chibi-go-status-effects" data-astro-cid-e2g5kknj>Status effects DB</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/trickcal-multi-hit-attacks" data-astro-cid-e2g5kknj>Normal &amp; Enhanced attacks multi hits</a> </li> </ul> </div><div class="submenu-row" data-astro-cid-e2g5kknj> <h4 class="submenu-row-title" data-astro-cid-e2g5kknj>Others</h4> <ul class="submenu-row-items" data-astro-cid-e2g5kknj> <li data-astro-cid-e2g5kknj> <a href="/guides/trickcal-new-player-common-questions" data-astro-cid-e2g5kknj>New player common questions</a> </li><li data-astro-cid-e2g5kknj> <a href="/guides/trickcal-revive-codes" data-astro-cid-e2g5kknj>Trickcal: Chibi Go free codes</a> </li> </ul> </div> </div> </div> </li><li class="  " data-astro-cid-e2g5kknj> <a href="/trickcal-chibi-go-tier-list" data-astro-cid-e2g5kknj> <i class="ri-line-chart-line" data-astro-cid-e2g5kknj></i> Tier List  </a>   </li><li class="  " data-astro-cid-e2g5kknj> <a href="/trickcal-chibi-go-characters" data-astro-cid-e2g5kknj> <i class="ri-user-line" data-astro-cid-e2g5kknj></i> Characters  </a>   </li><li class="  " data-astro-cid-e2g5kknj> <a href="/trickcal-chibi-go-artifacts-and-cards" data-astro-cid-e2g5kknj> <i class="ri-stack-line" data-astro-cid-e2g5kknj></i> Artifacts  </a>   </li> <li class="social-group" data-astro-cid-e2g5kknj> <button id="settings-trigger" class="social-btn settings" type="button" title="Settings" aria-label="Settings" data-astro-cid-e2g5kknj> <i class="ri-settings-3-line" data-astro-cid-e2g5kknj></i> </button> <a href="https://www.youtube.com/@lootandwaifus/videos" class="social-btn youtube" target="_blank" rel="noopener noreferrer" title="YouTube" data-astro-cid-e2g5kknj> <i class="ri-youtube-fill" data-astro-cid-e2g5kknj></i> </a> <a href="https://discord.gg/lootandwaifus" class="social-btn discord" target="_blank" rel="noopener noreferrer" title="Discord" data-astro-cid-e2g5kknj> <i class="ri-discord-fill" data-astro-cid-e2g5kknj></i> </a> </li> </ul> </div> </nav> <div class="overlay" id="overlay" data-astro-cid-e2g5kknj></div> <script>
+  const toggle = document.getElementById("nav-toggle");
+  const navLinks = document.getElementById("nav-links");
+  const overlay = document.getElementById("overlay");
+
+  // Hamburger menu functionality
+  toggle.addEventListener("click", () => {
+    navLinks.classList.toggle("open");
+    overlay.classList.toggle("show");
+    toggle.classList.toggle("active");
+  });
+
+  overlay.addEventListener("click", () => {
+    navLinks.classList.remove("open");
+    overlay.classList.remove("show");
+    toggle.classList.remove("active");
+    // Close all submenus
+    const openSubmenus = document.querySelectorAll(".submenu.show");
+    const activeSubmenuTriggers = document.querySelectorAll(
+      ".has-submenu.active",
+    );
+    openSubmenus.forEach((submenu) => submenu.classList.remove("show"));
+    activeSubmenuTriggers.forEach((trigger) =>
+      trigger.classList.remove("active"),
+    );
+  });
+
+  // Submenu functionality for touch devices
+  window.setupSubmenuTriggers = function() {
+    const submenuTriggers = document.querySelectorAll(".submenu-trigger");
+
+    submenuTriggers.forEach((trigger) => {
+    // Remove existing listeners by cloning and replacing the element
+    const newTrigger = trigger.cloneNode(true);
+    trigger.parentNode.replaceChild(newTrigger, trigger);
+    });
+
+    // Re-query after replacing elements
+    const newSubmenuTriggers = document.querySelectorAll(".submenu-trigger");
+
+    newSubmenuTriggers.forEach((trigger) => {
+    // Use touchstart for better touch device support
+    trigger.addEventListener(
+      "touchstart",
+      (e) => {
+        const parentLi = trigger.closest(".has-submenu");
+
+        // On mobile, wide submenus are hidden — allow navigation for those links
+        if (parentLi.classList.contains("has-wide-submenu") && window.innerWidth <= 768) {
+          return;
+        }
+
+        const submenu =
+          parentLi.querySelector(".submenu:not(.submenu-wide)") ||
+          parentLi.querySelector(".submenu-wide");
+
+        // Check if submenu is currently open
+        const isOpen = submenu.classList.contains("show");
+
+        // Always prevent default to avoid navigation
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!isOpen) {
+          // Close other open submenus
+          const otherSubmenus = document.querySelectorAll(".submenu.show");
+          const otherTriggers = document.querySelectorAll(
+            ".has-submenu.active",
+          );
+
+          otherSubmenus.forEach((otherSubmenu) => {
+            otherSubmenu.classList.remove("show");
+          });
+
+          otherTriggers.forEach((otherTrigger) => {
+            otherTrigger.classList.remove("active");
+          });
+
+          // Open current submenu
+          parentLi.classList.add("active");
+          submenu.classList.add("show");
+        } else {
+          // Close current submenu
+          parentLi.classList.remove("active");
+          submenu.classList.remove("show");
+        }
+      },
+      { passive: false },
+    );
+
+    // Keep click handler for devices that don't support hover but use click
+    trigger.addEventListener("click", (e) => {
+      const supportsHover = window.matchMedia(
+        "(hover: hover) and (pointer: fine)",
+      ).matches;
+
+      if (!supportsHover) {
+        const parentLi = trigger.closest(".has-submenu");
+
+        // On mobile, wide submenus are hidden — allow navigation for those links
+        if (parentLi.classList.contains("has-wide-submenu") && window.innerWidth <= 768) {
+          return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const submenu =
+          parentLi.querySelector(".submenu:not(.submenu-wide)") ||
+          parentLi.querySelector(".submenu-wide");
+        const isOpen = submenu.classList.contains("show");
+
+        if (!isOpen) {
+          // Close other open submenus
+          const otherSubmenus = document.querySelectorAll(".submenu.show");
+          const otherTriggers = document.querySelectorAll(
+            ".has-submenu.active",
+          );
+
+          otherSubmenus.forEach((otherSubmenu) => {
+            otherSubmenu.classList.remove("show");
+          });
+
+          otherTriggers.forEach((otherTrigger) => {
+            otherTrigger.classList.remove("active");
+          });
+
+          // Open current submenu
+          parentLi.classList.add("active");
+          submenu.classList.add("show");
+        } else {
+          // Close current submenu
+          parentLi.classList.remove("active");
+          submenu.classList.remove("show");
+        }
+      }
+    });
+  });
+  };
+
+  // Initialize submenu triggers on page load
+  window.setupSubmenuTriggers();
+
+  // Keep wide submenu top aligned with navbar bottom
+  function updateWideSubmenuTop() {
+    const navbar = document.querySelector('.navbar');
+    if (!navbar) return;
+    const bottom = navbar.getBoundingClientRect().bottom;
+    document.querySelectorAll('.submenu-wide-wrapper').forEach(el => {
+      el.style.top = bottom + 'px';
+    });
+  }
+  updateWideSubmenuTop();
+  // Re-run after all images load (timers bar images may not be loaded on first call)
+  window.addEventListener('load', updateWideSubmenuTop);
+  window.addEventListener('resize', updateWideSubmenuTop);
+  // Re-run on scroll since navbar is sticky and timers bar may hide
+  window.addEventListener('scroll', updateWideSubmenuTop, { passive: true });
+
+  // Recalculate on hover so the first hover after page load is always accurate
+  document.querySelectorAll('.has-wide-submenu').forEach(el => {
+    el.addEventListener('mouseenter', updateWideSubmenuTop);
+  });
+
+  // Logo dropdown (game switcher)
+  const logoTrigger = document.querySelector('.logo-dropdown-trigger');
+  if (logoTrigger) {
+    const logoWrapper = logoTrigger.closest('.has-logo-dropdown');
+    const logoDropdown = logoWrapper.querySelector('.logo-dropdown');
+
+    function closeLogoDropdown() {
+      logoDropdown.classList.remove('show');
+      logoWrapper.classList.remove('open');
+    }
+
+    logoTrigger.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isOpen = logoDropdown.classList.contains('show');
+      if (isOpen) {
+        closeLogoDropdown();
+      } else {
+        logoDropdown.classList.add('show');
+        logoWrapper.classList.add('open');
+      }
+    }, { passive: false });
+
+    logoTrigger.addEventListener('click', (e) => {
+      const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      if (!supportsHover) {
+        e.preventDefault();
+        const isOpen = logoDropdown.classList.contains('show');
+        if (isOpen) {
+          closeLogoDropdown();
+        } else {
+          logoDropdown.classList.add('show');
+          logoWrapper.classList.add('open');
+        }
+      }
+    });
+
+    document.addEventListener('touchstart', (e) => {
+      if (!e.target.closest('.has-logo-dropdown')) {
+        closeLogoDropdown();
+      }
+    });
+  }
+
+  // Close submenus when tapping outside on touch devices
+  document.addEventListener("touchstart", (e) => {
+    const supportsHover = window.matchMedia(
+      "(hover: hover) and (pointer: fine)",
+    ).matches;
+
+    if (!supportsHover) {
+      // Check if tap is outside any submenu or submenu trigger
+      if (!e.target.closest(".has-submenu")) {
+        const openSubmenus = document.querySelectorAll(".submenu.show");
+        const activeSubmenuTriggers = document.querySelectorAll(
+          ".has-submenu.active",
+        );
+
+        openSubmenus.forEach((submenu) => submenu.classList.remove("show"));
+        activeSubmenuTriggers.forEach((trigger) =>
+          trigger.classList.remove("active"),
+        );
+      }
+    }
+  });
+
+  // Handle window resize to clean up touch-specific states
+  window.addEventListener("resize", () => {
+    const supportsHover = window.matchMedia(
+      "(hover: hover) and (pointer: fine)",
+    ).matches;
+    if (supportsHover) {
+      // Clean up touch-specific classes when switching to hover-enabled device
+      const activeSubmenuTriggers = document.querySelectorAll(
+        ".has-submenu.active",
+      );
+      const openSubmenus = document.querySelectorAll(".submenu.show");
+
+      activeSubmenuTriggers.forEach((trigger) =>
+        trigger.classList.remove("active"),
+      );
+      openSubmenus.forEach((submenu) => submenu.classList.remove("show"));
+    }
+  });
+</script>  <div class="container  flowchart " data-astro-cid-jm6w7tvs> <span data-astro-cid-jm6w7tvs></span>  <div class="viewer-wrapper" data-astro-cid-wx72mqxv> <!-- Top bar --> <div class="viewer-bar" data-astro-cid-wx72mqxv> <span class="viewer-pack-name" id="current-pack-name" data-astro-cid-wx72mqxv>Loading...</span> <button class="switch-pack-btn" id="switch-pack-btn" data-astro-cid-wx72mqxv> <i class="ri-layout-grid-line" data-astro-cid-wx72mqxv></i>
+Switch Pack
+</button> </div> <!-- 5 spine player columns --> <div class="players-row" data-astro-cid-wx72mqxv> <div class="player-col" data-astro-cid-wx72mqxv> <div class="player-container" id="spine-slot-0" data-astro-cid-wx72mqxv></div> <div class="player-char-name" id="char-name-0" data-astro-cid-wx72mqxv>&nbsp;</div> </div><div class="player-col" data-astro-cid-wx72mqxv> <div class="player-container" id="spine-slot-1" data-astro-cid-wx72mqxv></div> <div class="player-char-name" id="char-name-1" data-astro-cid-wx72mqxv>&nbsp;</div> </div><div class="player-col" data-astro-cid-wx72mqxv> <div class="player-container" id="spine-slot-2" data-astro-cid-wx72mqxv></div> <div class="player-char-name" id="char-name-2" data-astro-cid-wx72mqxv>&nbsp;</div> </div><div class="player-col" data-astro-cid-wx72mqxv> <div class="player-container" id="spine-slot-3" data-astro-cid-wx72mqxv></div> <div class="player-char-name" id="char-name-3" data-astro-cid-wx72mqxv>&nbsp;</div> </div><div class="player-col" data-astro-cid-wx72mqxv> <div class="player-container" id="spine-slot-4" data-astro-cid-wx72mqxv></div> <div class="player-char-name" id="char-name-4" data-astro-cid-wx72mqxv>&nbsp;</div> </div> </div> <!-- Pack switcher popup --> <div class="pack-popup" id="pack-popup" data-astro-cid-wx72mqxv> <div class="popup-content" data-astro-cid-wx72mqxv> <div class="popup-header" data-astro-cid-wx72mqxv> <h2 data-astro-cid-wx72mqxv>Select Skin Pack</h2> <button class="close-btn" id="close-popup-btn" data-astro-cid-wx72mqxv>&times;</button> </div> <div class="packs-grid" id="packs-grid" data-astro-cid-wx72mqxv></div> </div> </div> </div>  </div> <div class="container " data-astro-cid-jm6w7tvs> <footer data-astro-cid-g2olfjzb> <p data-astro-cid-g2olfjzb>© Loot & Waifus</p> <div class="links" data-astro-cid-g2olfjzb> <a href="/privacy-policy" data-astro-cid-g2olfjzb>Privacy Policy</a> <a href="/terms-of-service" data-astro-cid-g2olfjzb>Terms of Service</a> </div> </footer> <div class="made-by" data-astro-cid-g2olfjzb> <div class="separator" data-astro-cid-g2olfjzb></div>  <svg class="tenerife" viewBox="0 0 522 496" role="img" aria-label="Tenerife" xmlns="http://www.w3.org/2000/svg" data-astro-cid-g2olfjzb> <path fill="currentColor" d="
+M149.799957,431.269562
+	C145.501740,427.877441 140.438934,427.114197 135.979034,425.005310
+	C132.035233,423.140381 130.716034,420.676605 133.739639,416.373871
+	C138.004837,410.304230 136.446533,403.959259 131.853973,398.220612
+	C128.423050,393.933441 125.510971,390.065918 119.907188,388.003418
+	C116.815544,386.865540 115.080879,382.203827 112.583252,379.258911
+	C104.527710,369.760712 97.788765,359.379395 91.882225,348.451355
+	C91.070786,346.950073 90.549171,345.020691 90.661728,343.340973
+	C91.041016,337.681000 88.806419,334.198120 83.112389,332.851105
+	C80.148865,332.150024 78.655586,331.008026 79.706139,327.693176
+	C80.007019,326.743835 79.697021,325.217346 79.073006,324.421082
+	C75.231659,319.519379 75.572937,311.770386 68.553261,308.990356
+	C67.868584,308.719177 67.220909,307.381622 67.213455,306.533325
+	C67.169456,301.520874 66.995895,296.469086 67.570938,291.512360
+	C67.788475,289.637177 69.577995,287.603149 71.183502,286.295197
+	C75.711632,282.606293 76.111473,281.413849 72.306030,276.997406
+	C69.809517,274.100067 66.808304,271.643494 64.154350,268.873413
+	C62.810989,267.471313 61.585335,265.904724 60.567486,264.251770
+	C56.885826,258.272766 55.561710,251.171249 48.363522,246.968384
+	C43.867348,244.343201 40.748787,238.465958 39.047813,232.862122
+	C37.898758,229.076599 35.278446,227.323395 31.862846,226.015808
+	C26.982416,224.147476 21.471174,222.844299 19.897314,216.814117
+	C19.539206,215.442062 19.942732,213.423019 20.778864,212.269409
+	C23.560555,208.431473 26.571823,204.734634 29.787897,201.254303
+	C30.609589,200.365097 32.652485,199.913040 33.893948,200.222946
+	C39.215466,201.551407 43.344093,200.847336 48.772823,198.228546
+	C54.755566,195.342529 58.353256,190.523941 63.396561,187.122803
+	C65.691147,185.575333 67.708534,183.508530 70.168236,182.348648
+	C72.120132,181.428223 75.159790,180.497711 76.657211,181.376556
+	C80.708420,183.754181 84.327339,186.945923 87.857735,190.105270
+	C90.085503,192.098892 90.921974,194.593781 95.478119,193.193481
+	C97.898537,192.449585 103.690880,190.483749 106.781433,195.155502
+	C107.369354,196.044220 109.081398,196.259308 110.320702,196.632889
+	C113.092072,197.468246 115.960541,198.023575 118.666176,199.025772
+	C123.703552,200.891678 127.633957,198.754898 130.675858,192.588364
+	C137.290512,191.253525 143.560150,190.010681 149.812714,188.686996
+	C150.351517,188.572922 150.777786,187.924515 151.255051,187.522827
+	C153.158005,185.921265 155.060455,184.319122 156.963074,182.717178
+	C157.241074,183.032608 157.519073,183.348053 157.797073,183.663483
+	C158.748489,182.130142 159.699890,180.596802 160.872086,178.707642
+	C163.186172,180.485626 165.269730,182.086472 167.431030,183.747055
+	C172.007156,175.277618 172.025528,176.577332 182.630112,176.427414
+	C188.256088,176.347870 191.713043,181.484787 197.493225,179.769547
+	C199.739014,179.103119 202.897934,182.349197 205.818375,182.949402
+	C212.153656,184.251358 216.571945,179.034012 222.112244,177.443115
+	C223.927322,176.921921 225.452225,175.320938 227.269897,174.891968
+	C231.496964,173.894409 235.037415,172.593719 236.666367,167.864380
+	C237.651245,165.005066 252.358078,162.060745 254.583710,164.178879
+	C256.551788,166.051895 257.931366,165.737488 260.236267,164.915619
+	C262.682678,164.043289 265.566040,164.448853 268.243958,164.160583
+	C272.108154,163.744583 273.778564,161.126694 273.729065,157.624268
+	C273.652740,152.227661 276.611969,150.254822 281.789398,149.981827
+	C281.632782,148.521301 281.485229,147.145264 281.285797,145.285294
+	C284.132385,145.638596 286.662140,145.952576 289.535675,146.309219
+	C290.105499,144.626740 290.620544,143.099792 291.140167,141.574387
+	C291.408356,140.787170 291.557953,139.394440 291.976196,139.307236
+	C299.633301,137.711334 299.037292,129.048813 304.430908,124.908073
+	C309.264465,121.197311 313.941589,116.854568 318.754059,112.843773
+	C320.079712,111.738945 320.630096,109.006523 320.567383,107.052025
+	C320.271332,97.825966 323.413727,90.522064 331.418274,85.534256
+	C332.370361,84.940994 333.551208,83.982689 333.742859,83.018120
+	C335.158234,75.894485 341.565338,74.789642 346.709778,72.712532
+	C348.857361,71.845436 352.085175,73.495956 354.778168,74.174950
+	C358.702972,75.164497 362.258545,73.245255 364.125427,69.529015
+	C364.817078,68.152214 366.421875,66.712997 367.878082,66.335541
+	C373.008850,65.005608 375.594391,62.171150 375.318420,56.604671
+	C375.143188,53.070141 375.983978,50.304127 379.365356,49.017975
+	C383.148895,47.578842 385.496368,49.713680 387.629395,52.665379
+	C389.029541,54.602798 390.816956,56.787354 392.904266,57.528938
+	C394.481598,58.089317 397.861481,57.135777 398.603790,55.820328
+	C400.843933,51.850769 403.715027,50.931133 407.532684,52.080471
+	C409.135986,54.812653 410.683411,57.449593 412.403046,60.380013
+	C413.592407,59.597370 414.325745,59.248634 414.892975,58.721241
+	C422.094299,52.025856 422.492767,52.600590 430.941528,57.256897
+	C436.130310,60.116570 442.552521,60.890900 448.526978,62.058910
+	C449.921967,62.331631 451.774170,60.445911 453.369537,59.476795
+	C456.952179,57.300488 460.531952,55.117302 464.061768,52.856995
+	C466.414856,51.350170 469.031799,50.041573 470.920837,48.062256
+	C477.734009,40.923504 487.035339,43.178322 493.279327,47.086361
+	C496.375061,49.023952 499.376984,51.138458 502.264832,53.375008
+	C507.269165,57.250622 508.964569,62.598831 508.605865,68.734612
+	C508.272156,74.442444 507.504791,79.650627 501.775299,83.174706
+	C499.715881,84.441376 499.646423,88.603287 497.934692,90.895683
+	C496.806610,92.406433 494.019562,94.123253 492.576721,93.699593
+	C486.877502,92.026154 482.866791,94.954361 478.925140,97.893211
+	C474.079498,101.506050 469.632263,105.649551 464.851654,109.355759
+	C463.619995,110.310570 461.635498,110.240501 460.258820,111.073936
+	C457.874115,112.517616 455.760864,114.403297 453.411285,115.912964
+	C450.403320,117.845665 447.290710,119.618645 444.186340,121.396065
+	C443.329468,121.886681 442.074982,121.897797 441.456696,122.555504
+	C437.400818,126.869972 433.448273,131.282730 429.518280,135.713287
+	C428.870605,136.443512 428.697845,137.670929 427.970795,138.243225
+	C419.416931,144.976257 411.887238,152.850250 403.684204,159.972870
+	C401.643738,161.744568 399.965057,163.938782 398.158600,165.972992
+	C392.956757,171.830704 389.812927,180.052917 380.123505,180.598343
+	C375.216888,180.874542 371.385590,183.126862 369.629822,188.337448
+	C369.193604,189.632095 366.915405,190.595505 365.292267,191.140182
+	C361.967712,192.255829 360.938080,194.477890 360.448608,197.787918
+	C359.553284,203.842377 358.395355,209.902359 356.734802,215.787277
+	C354.954620,222.096054 360.502411,223.510117 363.515778,226.973404
+	C361.578217,230.114273 361.665405,232.489807 365.151733,235.110977
+	C368.345734,237.512405 366.774323,241.194305 364.517822,243.864899
+	C363.261017,245.352325 361.423737,246.365387 359.798187,247.522141
+	C354.203156,251.503632 350.791107,256.506195 348.754974,263.413422
+	C347.108704,268.998138 344.575348,274.326630 344.124817,280.272522
+	C344.112701,280.431946 344.041229,280.603943 343.950043,280.737854
+	C338.029358,289.434631 331.967712,298.041290 326.312012,306.906952
+	C325.365631,308.390503 326.178558,310.996368 326.178558,314.573822
+	C324.533173,316.298187 322.184265,319.384399 325.642731,323.517578
+	C326.224487,324.212830 325.926697,326.213287 325.344238,327.204651
+	C323.721100,329.967316 323.274933,332.243561 323.811096,335.806091
+	C324.316681,339.165131 320.757324,343.135956 318.378876,346.634521
+	C318.633789,349.705048 324.015656,351.797607 320.788879,356.254181
+	C318.677429,359.170319 316.474487,362.083679 313.927338,364.609863
+	C303.435577,375.014893 292.764099,385.082916 283.532104,396.859772
+	C278.167633,403.702972 274.634613,412.861542 265.761108,416.893524
+	C264.599304,417.421417 263.986694,419.206024 263.173706,420.444000
+	C261.260010,423.357971 259.905731,426.907837 257.367706,429.083557
+	C252.998230,432.829193 251.818207,435.676025 255.887375,440.720245
+	C257.020172,442.124390 254.641937,447.346771 252.712097,449.958618
+	C250.779022,452.574768 247.760696,451.285126 246.013184,448.802429
+	C244.619293,446.822083 243.687546,444.515839 242.557068,442.350861
+	C241.197235,439.746643 239.908920,437.505707 236.629608,440.574066
+	C235.810547,441.340515 233.480087,441.509552 232.489227,440.901733
+	C227.724609,437.979095 223.458649,438.278046 218.697327,441.183746
+	C215.155289,443.345337 210.765045,444.092896 207.147415,446.160950
+	C202.812927,448.638824 198.180740,450.731537 195.435150,455.624969
+	C194.305786,457.637848 190.843216,458.341614 188.890549,459.398102
+	C186.427994,457.805603 184.342758,455.950195 181.904816,454.994019
+	C177.783035,453.377411 175.228012,454.176392 173.312714,459.225830
+	C172.020905,462.631561 167.413895,464.779816 165.163849,466.732208
+	C161.105469,463.698334 157.954239,461.386017 154.863358,458.995697
+	C154.240051,458.513672 153.617508,457.808838 153.385483,457.081970
+	C152.482391,454.252838 151.736664,451.373474 150.758896,447.895813
+	C155.201233,443.529144 155.224182,440.770264 149.799957,431.269562
+z" data-astro-cid-g2olfjzb></path> </svg> <p class="attribution" data-astro-cid-g2olfjzb>
+Made by <strong data-astro-cid-g2olfjzb>Sefhi</strong> <i class="ri-discord-fill" data-astro-cid-g2olfjzb></i> <span class="username" data-astro-cid-g2olfjzb>sefhi</span> </p> </div> <div id="ncmp-consent-link" data-astro-cid-g2olfjzb></div> <div id="placement-anchor" data-astro-cid-g2olfjzb></div> <script>
+  // Hamburger menu (always runs)
+  document.querySelector(".hamburger")?.addEventListener("click", () => {
+    document.querySelector(".nav-links")?.classList.toggle("expanded");
+  });
+
+  try { // video stick
+    window["nitroAds"].createAd("placement-video", {
+      refreshTime: 30,
+      format: "floating",
+    });
+  } catch (error) { console.log(error); }
+  try { // hero placement mobile
+    window['nitroAds'].createAd('placement-hero-phone', {
+      "refreshTime": 30,
+      "renderVisibleOnly": false,
+      "sizes": [
+        [
+          "320",
+          "50"
+        ],
+        [
+          "320",
+          "100"
+        ]
+      ],
+      "report": {
+        "enabled": true,
+        "icon": true,
+        "wording": "Report Ad",
+        "position": "top-right"
+      },
+      "mediaQuery": "(min-width: 320px) and (max-width: 767px)"
+    });
+  } catch (error) { console.log(error); }
+  // try { // hero placement desktop / tablets
+  //   window['nitroAds'].createAd('placement-hero-desktop', {
+  //     "refreshTime": 30,
+  //     "renderVisibleOnly": false,
+  //     "sizes": [
+  //       [
+  //         "728",
+  //         "90"
+  //       ],
+  //       [
+  //         "970",
+  //         "90"
+  //       ],
+  //       [
+  //         "970",
+  //         "250"
+  //       ]
+  //     ],
+  //     "report": {
+  //       "enabled": true,
+  //       "icon": true,
+  //       "wording": "Report Ad",
+  //       "position": "top-right"
+  //     },
+  //     "mediaQuery": "(min-width: 1025px), (min-width: 768px) and (max-width: 1024px)"
+  //   });
+  // } catch (error) { console.log(error); }
+  try { // anchor
+    window["nitroAds"].createAd("placement-anchor", {
+      refreshTime: 30,
+      format: "anchor-v2",
+      anchor: "bottom",
+      anchorPersistClose: false,
+      report: {
+        enabled: true,
+        icon: true,
+        wording: "Report Ad",
+        position: "top-right",
+      },
+    });
+  } catch (error) { console.log(error); }
+
+  initializeAds();
+</script>  </div> <div class="settings-overlay" id="settings-overlay" data-astro-cid-lhvggqsx></div> <div class="settings-modal" id="settings-modal" role="dialog" aria-modal="true" aria-label="Settings" data-astro-cid-lhvggqsx> <div class="settings-header" data-astro-cid-lhvggqsx> <h2 data-astro-cid-lhvggqsx><i class="ri-settings-3-line" data-astro-cid-lhvggqsx></i> Settings</h2> <button class="settings-close" id="settings-close" aria-label="Close settings" data-astro-cid-lhvggqsx> <i class="ri-close-line" data-astro-cid-lhvggqsx></i> </button> </div> <div class="settings-tabs" data-astro-cid-lhvggqsx> <button class="settings-tab active" data-tab="general" data-astro-cid-lhvggqsx> <i class="ri-settings-3-line" data-astro-cid-lhvggqsx></i> General </button><button class="settings-tab" data-tab="nikke" data-astro-cid-lhvggqsx> <img src="/nikke.webp" alt="" width="20" height="20" data-astro-cid-lhvggqsx> NIKKE </button><button class="settings-tab" data-tab="trickcal" data-astro-cid-lhvggqsx> <img src="/trickcal.webp" alt="" width="20" height="20" data-astro-cid-lhvggqsx> Trickcal </button><button class="settings-tab" data-tab="swordxstaff" data-astro-cid-lhvggqsx> <img src="/swordstaff.webp" alt="" width="20" height="20" data-astro-cid-lhvggqsx> Sword x Staff </button><button class="settings-tab" data-tab="mad" data-astro-cid-lhvggqsx> <img src="/mad.webp" alt="" width="20" height="20" data-astro-cid-lhvggqsx> MAD </button> </div> <div class="settings-body" data-astro-cid-lhvggqsx> <div class="settings-panel active" data-panel="general" data-astro-cid-lhvggqsx>   <div class="settings-group" data-astro-cid-lhvggqsx> <h3 class="settings-group-title" data-astro-cid-lhvggqsx>Other options</h3> <div class="tier-list-toggles settings-toggles-stacked" data-astro-cid-lhvggqsx> <div class="toggle-item" data-astro-cid-lhvggqsx> <label class="toggle-switch" data-astro-cid-lhvggqsx> <input type="checkbox" class="settings-extra-toggle" data-game="general" data-key="hideTopAd" data-astro-cid-lhvggqsx> <span class="toggle-slider" data-astro-cid-lhvggqsx></span> </label> <span class="toggle-text" data-astro-cid-lhvggqsx> <span class="toggle-label" data-astro-cid-lhvggqsx>Hide top ad on character pages and guides</span> <span class="toggle-desc" data-astro-cid-lhvggqsx>Sponsors make it possible to work full time on the website, consider leaving this off to support my content.</span> </span> </div><div class="toggle-item" data-astro-cid-lhvggqsx> <label class="toggle-switch" data-astro-cid-lhvggqsx> <input type="checkbox" class="settings-extra-toggle" data-game="general" data-key="disableLandingVideos" data-astro-cid-lhvggqsx> <span class="toggle-slider" data-astro-cid-lhvggqsx></span> </label> <span class="toggle-text" data-astro-cid-lhvggqsx> <span class="toggle-label" data-astro-cid-lhvggqsx>Disable videos on landing page</span>  </span> </div><div class="toggle-item" data-astro-cid-lhvggqsx> <label class="toggle-switch" data-astro-cid-lhvggqsx> <input type="checkbox" class="settings-extra-toggle" data-game="general" data-key="hideCarousels" data-astro-cid-lhvggqsx> <span class="toggle-slider" data-astro-cid-lhvggqsx></span> </label> <span class="toggle-text" data-astro-cid-lhvggqsx> <span class="toggle-label" data-astro-cid-lhvggqsx>Hide character carousels on game pages</span>  </span> </div> </div> </div>  </div><div class="settings-panel" data-panel="nikke" data-astro-cid-lhvggqsx> <div class="settings-group" data-astro-cid-lhvggqsx> <h3 class="settings-group-title" data-astro-cid-lhvggqsx>Default skill level</h3> <div class="level-switcher settings-skill-levels" data-game="nikke" data-astro-cid-lhvggqsx> <button class="level-button" data-level="1" data-astro-cid-lhvggqsx>Lv. 1</button><button class="level-button" data-level="2" data-astro-cid-lhvggqsx>Lv. 2</button><button class="level-button" data-level="3" data-astro-cid-lhvggqsx>Lv. 3</button><button class="level-button" data-level="4" data-astro-cid-lhvggqsx>Lv. 4</button><button class="level-button" data-level="5" data-astro-cid-lhvggqsx>Lv. 5</button><button class="level-button" data-level="6" data-astro-cid-lhvggqsx>Lv. 6</button><button class="level-button" data-level="7" data-astro-cid-lhvggqsx>Lv. 7</button><button class="level-button" data-level="8" data-astro-cid-lhvggqsx>Lv. 8</button><button class="level-button" data-level="9" data-astro-cid-lhvggqsx>Lv. 9</button><button class="level-button" data-level="10" data-astro-cid-lhvggqsx>Lv. 10</button> </div> </div>  <div class="settings-group" data-astro-cid-lhvggqsx> <h3 class="settings-group-title" data-astro-cid-lhvggqsx>Other options</h3> <div class="tier-list-toggles settings-toggles-stacked" data-astro-cid-lhvggqsx> <div class="toggle-item" data-astro-cid-lhvggqsx> <label class="toggle-switch" data-astro-cid-lhvggqsx> <input type="checkbox" class="settings-extra-toggle" data-game="nikke" data-key="favoriteItems" data-astro-cid-lhvggqsx> <span class="toggle-slider" data-astro-cid-lhvggqsx></span> </label> <span class="toggle-text" data-astro-cid-lhvggqsx> <span class="toggle-label" data-astro-cid-lhvggqsx>Load Favorite Item (treasures) by default</span>  </span> </div><div class="toggle-item" data-astro-cid-lhvggqsx> <label class="toggle-switch" data-astro-cid-lhvggqsx> <input type="checkbox" class="settings-extra-toggle" data-game="nikke" data-key="showAssetIcon" data-astro-cid-lhvggqsx> <span class="toggle-slider" data-astro-cid-lhvggqsx></span> </label> <span class="toggle-text" data-astro-cid-lhvggqsx> <span class="toggle-label" data-astro-cid-lhvggqsx>Show asset icon by default</span>  </span> </div> </div> </div> <div class="settings-group" data-astro-cid-lhvggqsx> <h3 class="settings-group-title" data-astro-cid-lhvggqsx>Reorder character sections</h3> <div class="section-manager" data-game="nikke" data-astro-cid-lhvggqsx> <div class="section-row" data-section="skills" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Skills</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="skill-recommendations" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Skill recommendations</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="build" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Build</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="pros-cons" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Pros &amp; Cons</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="notes" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Synergies &amp; notes</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="raid-usage" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Raid usage</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div> </div> </div> </div><div class="settings-panel" data-panel="trickcal" data-astro-cid-lhvggqsx> <div class="settings-group" data-astro-cid-lhvggqsx> <h3 class="settings-group-title" data-astro-cid-lhvggqsx>Default skill level</h3> <div class="level-switcher settings-skill-levels" data-game="trickcal" data-astro-cid-lhvggqsx> <button class="level-button" data-level="1" data-astro-cid-lhvggqsx>Lv. 1</button><button class="level-button" data-level="2" data-astro-cid-lhvggqsx>Lv. 2</button><button class="level-button" data-level="3" data-astro-cid-lhvggqsx>Lv. 3</button><button class="level-button" data-level="4" data-astro-cid-lhvggqsx>Lv. 4</button><button class="level-button" data-level="5" data-astro-cid-lhvggqsx>Lv. 5</button><button class="level-button" data-level="6" data-astro-cid-lhvggqsx>Lv. 6</button><button class="level-button" data-level="7" data-astro-cid-lhvggqsx>Lv. 7</button><button class="level-button" data-level="8" data-astro-cid-lhvggqsx>Lv. 8</button><button class="level-button" data-level="9" data-astro-cid-lhvggqsx>Lv. 9</button><button class="level-button" data-level="10" data-astro-cid-lhvggqsx>Lv. 10</button><button class="level-button" data-level="11" data-astro-cid-lhvggqsx>Lv. 11</button><button class="level-button" data-level="12" data-astro-cid-lhvggqsx>Lv. 12</button> </div> </div>   <div class="settings-group" data-astro-cid-lhvggqsx> <h3 class="settings-group-title" data-astro-cid-lhvggqsx>Reorder character sections</h3> <div class="section-manager" data-game="trickcal" data-astro-cid-lhvggqsx> <div class="section-row" data-section="skills" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Skills</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="skill-priority" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Skill priority</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="yearning" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Yearning (aside)</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="artifacts" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Recommended artifacts</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="foods-aclub" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Foods &amp; A-Club</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="spine-player" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Skins</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div> </div> </div> </div><div class="settings-panel" data-panel="swordxstaff" data-astro-cid-lhvggqsx>  <div class="settings-group" data-astro-cid-lhvggqsx> <h3 class="settings-group-title" data-astro-cid-lhvggqsx>Default skill rarity</h3> <div class="rarity-switcher settings-rarities" data-game="swordxstaff" data-astro-cid-lhvggqsx> <button class="rarity-button" data-rarity="Rare" style="--rarity-color:#5f9aff" data-astro-cid-lhvggqsx>Rare</button><button class="rarity-button" data-rarity="Epic" style="--rarity-color:#9660c4" data-astro-cid-lhvggqsx>Epic</button><button class="rarity-button" data-rarity="Legendary" style="--rarity-color:#e68a23" data-astro-cid-lhvggqsx>Legendary</button><button class="rarity-button" data-rarity="Mythic" style="--rarity-color:#ebed63" data-astro-cid-lhvggqsx>Mythic</button><button class="rarity-button" data-rarity="Divine" style="--rarity-color:#e05252" data-astro-cid-lhvggqsx>Divine</button><button class="rarity-button" data-rarity="Immortal" style="--rarity-color:#e884e8" data-astro-cid-lhvggqsx>Immortal</button> </div> </div> <div class="settings-group" data-astro-cid-lhvggqsx> <h3 class="settings-group-title" data-astro-cid-lhvggqsx>Other options</h3> <div class="tier-list-toggles settings-toggles-stacked" data-astro-cid-lhvggqsx> <div class="toggle-item" data-astro-cid-lhvggqsx> <label class="toggle-switch" data-astro-cid-lhvggqsx> <input type="checkbox" class="settings-extra-toggle" data-game="swordxstaff" data-key="hideTwSkills" data-astro-cid-lhvggqsx> <span class="toggle-slider" data-astro-cid-lhvggqsx></span> </label> <span class="toggle-text" data-astro-cid-lhvggqsx> <span class="toggle-label" data-astro-cid-lhvggqsx>Hide skills from the TW server</span> <span class="toggle-desc" data-astro-cid-lhvggqsx>Show skills available in the global server only.</span> </span> </div> </div> </div>  </div><div class="settings-panel" data-panel="mad" data-astro-cid-lhvggqsx>    <div class="settings-group" data-astro-cid-lhvggqsx> <h3 class="settings-group-title" data-astro-cid-lhvggqsx>Reorder character sections</h3> <div class="section-manager" data-game="mad" data-astro-cid-lhvggqsx> <div class="section-row" data-section="skills" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Skills</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="notes" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Synergies &amp; notes</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="gifts" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Gifts</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div><div class="section-row" data-section="mad-spine-player" draggable="true" data-astro-cid-lhvggqsx> <span class="section-row-label" data-astro-cid-lhvggqsx><i class="ri-draggable section-grip" data-astro-cid-lhvggqsx></i>Chibi viewer</span> <div class="section-row-actions" data-astro-cid-lhvggqsx> <button class="section-btn section-move" data-dir="up" title="Move up" aria-label="Move up" data-astro-cid-lhvggqsx> <i class="ri-arrow-up-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-move" data-dir="down" title="Move down" aria-label="Move down" data-astro-cid-lhvggqsx> <i class="ri-arrow-down-s-line" data-astro-cid-lhvggqsx></i> </button> <button class="section-btn section-visibility" title="Show/hide" aria-label="Show or hide" data-astro-cid-lhvggqsx> <i class="ri-eye-line" data-astro-cid-lhvggqsx></i> </button> </div> </div> </div> </div> </div> </div> <div class="settings-footer" data-astro-cid-lhvggqsx> <button class="settings-reset" id="settings-reset" data-astro-cid-lhvggqsx> <i class="ri-refresh-line" data-astro-cid-lhvggqsx></i> Reset to defaults
+</button> </div> </div> <script type="module" src="/entry.Cyf6qQZU.js"></script>  <script type="module" src="/entry.0MW3dev0.js"></script> <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"efc6b0845d84405680bb6dc19648557c","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body></html> <script>(function(){const resolvedPacks = [{"id":"battle-royale","name":"Battle Royale","characters":[{"name":"Kathy","skin":{"id":"KathySkin2","atlas":"/l2d/trickcal/Kathy/KathySkin2.atlas.asset","skel":"/l2d/trickcal/Kathy/KathySkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/kathy.webp"},{"name":"Orr","skin":{"id":"OrrSkin2","atlas":"/l2d/trickcal/Orr/OrrSkin2.atlas.asset","skel":"/l2d/trickcal/Orr/OrrSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/orr.webp"},{"name":"Shaydi","skin":{"id":"ShadySkin3","atlas":"/l2d/trickcal/Shaydi/ShadySkin3.atlas.asset","skel":"/l2d/trickcal/Shaydi/ShadySkin3.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/shady.webp"},{"name":"Sylla","skin":{"id":"SyllaSkin3","atlas":"/l2d/trickcal/Sylla/SyllaSkin3.atlas.asset","skel":"/l2d/trickcal/Sylla/SyllaSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/sylla.webp"},{"name":"Tig","skin":{"id":"TigSkin3","atlas":"/l2d/trickcal/Tig/TigSkin3.atlas.asset","skel":"/l2d/trickcal/Tig/TigSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/tig.webp"}]},{"id":"halloween","name":"Halloween","characters":[{"name":"Ayla","skin":{"id":"AylaSkin2","atlas":"/l2d/trickcal/Ayla/AylaSkin2.atlas.asset","skel":"/l2d/trickcal/Ayla/AylaSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/ayla.webp"},{"name":"Beni (Beni)","skin":{"id":"BeniBeniSkin2","atlas":"/l2d/trickcal/Beni (Beni)/BeniBeniSkin2.atlas.asset","skel":"/l2d/trickcal/Beni (Beni)/BeniBeniSkin2.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/benny.webp"},{"name":"Alice","skin":{"id":"AliceSkin4","atlas":"/l2d/trickcal/Alice/AliceSkin4.atlas.asset","skel":"/l2d/trickcal/Alice/AliceSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/alice.webp"},{"name":"Canna","skin":{"id":"CannaSkin4","atlas":"/l2d/trickcal/Canna/CannaSkin4.atlas.asset","skel":"/l2d/trickcal/Canna/CannaSkin4.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/canna.webp"},{"name":"Posher","skin":{"id":"PosherSkin4","atlas":"/l2d/trickcal/Posher/PosherSkin4.atlas.asset","skel":"/l2d/trickcal/Posher/PosherSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/posher.webp"}]},{"id":"picnic","name":"Picnic","characters":[{"name":"Leone","skin":{"id":"LionSkin2","atlas":"/l2d/trickcal/Leone/LionSkin2.atlas.asset","skel":"/l2d/trickcal/Leone/LionSkin2.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/leone.webp"},{"name":"Diana","skin":{"id":"DianaSkin3","atlas":"/l2d/trickcal/Diana/DianaSkin3.atlas.asset","skel":"/l2d/trickcal/Diana/DianaSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/diana.webp"},{"name":"Picora","skin":{"id":"PicoraSkin2","atlas":"/l2d/trickcal/Picora/PicoraSkin2.atlas.asset","skel":"/l2d/trickcal/Picora/PicoraSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/picora.webp"},{"name":"Butter","skin":{"id":"ButterSkin2","atlas":"/l2d/trickcal/Butter/ButterSkin2.atlas.asset","skel":"/l2d/trickcal/Butter/ButterSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/butter.webp"},{"name":"Opal","skin":{"id":"OpalSkin3","atlas":"/l2d/trickcal/Opal/OpalSkin3.atlas.asset","skel":"/l2d/trickcal/Opal/OpalSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/opal.webp"}]},{"id":"bunny-girls","name":"Bunnygirls","characters":[{"name":"Alice","skin":{"id":"AliceSkin3","atlas":"/l2d/trickcal/Alice/AliceSkin3.atlas.asset","skel":"/l2d/trickcal/Alice/AliceSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/alice.webp"},{"name":"Naia","skin":{"id":"NaiaSkin2","atlas":"/l2d/trickcal/Naia/NaiaSkin2.atlas.asset","skel":"/l2d/trickcal/Naia/NaiaSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/naia.webp"},{"name":"Amelia","skin":{"id":"AmeliaSkin3","atlas":"/l2d/trickcal/Amelia/AmeliaSkin3.atlas.asset","skel":"/l2d/trickcal/Amelia/AmeliaSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/amelia.webp"},{"name":"Selene","skin":{"id":"SellineSkin3","atlas":"/l2d/trickcal/Selene/SellineSkin3.atlas.asset","skel":"/l2d/trickcal/Selene/SellineSkin3.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/selinne.webp"},{"name":"Blanchet","skin":{"id":"BlanchetSkin2","atlas":"/l2d/trickcal/Blanchet/BlanchetSkin2.atlas.asset","skel":"/l2d/trickcal/Blanchet/BlanchetSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/blanchet.webp"}]},{"id":"school-music-band","name":"School Music Band","characters":[{"name":"Posher","skin":{"id":"PosherSkin2","atlas":"/l2d/trickcal/Posher/PosherSkin2.atlas.asset","skel":"/l2d/trickcal/Posher/PosherSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/posher.webp"},{"name":"Shaydi","skin":{"id":"ShadySkin2","atlas":"/l2d/trickcal/Shaydi/ShadySkin2.atlas.asset","skel":"/l2d/trickcal/Shaydi/ShadySkin2.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/shady.webp"},{"name":"Kommy (Swimsuit)","skin":{"id":"KommySwimSkin1","atlas":"/l2d/trickcal/Kommy (Swimsuit)/KommySwimSkin1.atlas.asset","skel":"/l2d/trickcal/Kommy (Swimsuit)/KommySwimSkin1.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/kommy-swimsuit.webp"},{"name":"Kyarot","skin":{"id":"KyarotSkin2","atlas":"/l2d/trickcal/Kyarot/KyarotSkin2.atlas.asset","skel":"/l2d/trickcal/Kyarot/KyarotSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/kyarot.webp"},{"name":"Shoupan","skin":{"id":"ShoupanSkin2","atlas":"/l2d/trickcal/Shoupan/ShoupanSkin2.atlas.asset","skel":"/l2d/trickcal/Shoupan/ShoupanSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/shoupan.webp"}]},{"id":"summer-outfits-2","name":"Summer Outfits v2","characters":[{"name":"Shasha","skin":{"id":"ShashaSkin2","atlas":"/l2d/trickcal/Shasha/ShashaSkin2.atlas.asset","skel":"/l2d/trickcal/Shasha/ShashaSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/shasha.webp"},{"name":"Daya","skin":{"id":"DayaSkin2","atlas":"/l2d/trickcal/Daya/DayaSkin2.atlas.asset","skel":"/l2d/trickcal/Daya/DayaSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/daya.webp"},{"name":"Rim (Chaos)","skin":{"id":"RimChaosSkin2","atlas":"/l2d/trickcal/Rim (Chaos)/RimChaosSkin2.atlas.asset","skel":"/l2d/trickcal/Rim (Chaos)/RimChaosSkin2.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/rim-chaos.webp"},{"name":"Canna","skin":{"id":"CannaSkin2","atlas":"/l2d/trickcal/Canna/CannaSkin2.atlas.asset","skel":"/l2d/trickcal/Canna/CannaSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/canna.webp"},{"name":"Sylla","skin":{"id":"SyllaSkin2","atlas":"/l2d/trickcal/Sylla/SyllaSkin2.atlas.asset","skel":"/l2d/trickcal/Sylla/SyllaSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/sylla.webp"}]},{"id":"summer-outfits","name":"Summer Outfits","characters":[{"name":"Hilde","skin":{"id":"HildeSkin2","atlas":"/l2d/trickcal/Hilde/HildeSkin2.atlas.asset","skel":"/l2d/trickcal/Hilde/HildeSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/hilde.webp"},{"name":"Barong","skin":{"id":"BarongSkin3","atlas":"/l2d/trickcal/Barong/BarongSkin3.atlas.asset","skel":"/l2d/trickcal/Barong/BarongSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/barong.webp"},{"name":"Arco","skin":{"id":"ArcoSkin2","atlas":"/l2d/trickcal/Arco/ArcoSkin2.atlas.asset","skel":"/l2d/trickcal/Arco/ArcoSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/arco.webp"},{"name":"Rollet","skin":{"id":"RollettSkin1","atlas":"/l2d/trickcal/Rollet/RollettSkin1.atlas.asset","skel":"/l2d/trickcal/Rollet/RollettSkin1.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/rollet.webp"},{"name":"Raika","skin":{"id":"LaikaSkin2","atlas":"/l2d/trickcal/Raika/LaikaSkin2.atlas.asset","skel":"/l2d/trickcal/Raika/LaikaSkin2.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/laika.webp"}]},{"id":"sleepover","name":"Sleepover","characters":[{"name":"Risty","skin":{"id":"RistySkin2","atlas":"/l2d/trickcal/Risty/RistySkin2.atlas.asset","skel":"/l2d/trickcal/Risty/RistySkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/risty.webp"},{"name":"Speaki (Maid)","skin":{"id":"SpeakiMaidSkin2","atlas":"/l2d/trickcal/Speaki (Maid)/SpeakiMaidSkin2.atlas.asset","skel":"/l2d/trickcal/Speaki (Maid)/SpeakiMaidSkin2.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/speaki-maid.webp"},{"name":"Erpin","skin":{"id":"ErpinSkin4","atlas":"/l2d/trickcal/Erpin/ErpinSkin4.atlas.asset","skel":"/l2d/trickcal/Erpin/ErpinSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/erpin.webp"},{"name":"Neti","skin":{"id":"NetiSkin2","atlas":"/l2d/trickcal/Neti/NetiSkin2.atlas.asset","skel":"/l2d/trickcal/Neti/NetiSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/neti.webp"},{"name":"Elena","skin":{"id":"ElenaSkin2","atlas":"/l2d/trickcal/Elena/ElenaSkin2.atlas.asset","skel":"/l2d/trickcal/Elena/ElenaSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/elena.webp"}]},{"id":"onsen","name":"Onsen","characters":[{"name":"Makasha","skin":{"id":"MakashaSkin2","atlas":"/l2d/trickcal/Makasha/MakashaSkin2.atlas.asset","skel":"/l2d/trickcal/Makasha/MakashaSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/makasha.webp"},{"name":"Diana","skin":{"id":"DianaSkin4","atlas":"/l2d/trickcal/Diana/DianaSkin4.atlas.asset","skel":"/l2d/trickcal/Diana/DianaSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/diana.webp"},{"name":"Mute","skin":{"id":"MuteSkin2","atlas":"/l2d/trickcal/Mute/MuteSkin2.atlas.asset","skel":"/l2d/trickcal/Mute/MuteSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/mute.webp"},{"name":"Ashur","skin":{"id":"AshurSkin2","atlas":"/l2d/trickcal/Ashur/AshurSkin2.atlas.asset","skel":"/l2d/trickcal/Ashur/AshurSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/ashur.webp"},{"name":"Gwynn","skin":{"id":"GuinSkin2","atlas":"/l2d/trickcal/Gwynn/GuinSkin2.atlas.asset","skel":"/l2d/trickcal/Gwynn/GuinSkin2.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/gwynn.webp"}]},{"id":"rpg-series","name":"RPG Series","characters":[{"name":"Vivi","skin":{"id":"ViviSkin4","atlas":"/l2d/trickcal/Vivi/ViviSkin4.atlas.asset","skel":"/l2d/trickcal/Vivi/ViviSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/vivi.webp"},{"name":"Aya","skin":{"id":"AyaSkin4","atlas":"/l2d/trickcal/Aya/AyaSkin4.atlas.asset","skel":"/l2d/trickcal/Aya/AyaSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/aya.webp"},{"name":"xXionx","skin":{"id":"xXionxSkin4","atlas":"/l2d/trickcal/xXionx/xXionxSkin4.atlas.asset","skel":"/l2d/trickcal/xXionx/xXionxSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/xion.webp"},{"name":"ED","skin":{"id":"EdSkin3","atlas":"/l2d/trickcal/Ed/EdSkin3.atlas.asset","skel":"/l2d/trickcal/Ed/EdSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/ed.webp"},{"name":"Chloe","skin":{"id":"ChloeSkin4","atlas":"/l2d/trickcal/Chloe/ChloeSkin4.atlas.asset","skel":"/l2d/trickcal/Chloe/ChloeSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/chloe.webp"},{"name":"Ui","skin":{"id":"UiSkin4","atlas":"/l2d/trickcal/Ui/UiSkin4.atlas.asset","skel":"/l2d/trickcal/Ui/UiSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/ui.webp"}]},{"id":"winter-outfits","name":"Winter Outfits","characters":[{"name":"Momo","skin":{"id":"MomoSkin4","atlas":"/l2d/trickcal/Momo/MomoSkin4.atlas.asset","skel":"/l2d/trickcal/Momo/MomoSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/momo.webp"},{"name":"Kommy (Swimsuit)","skin":{"id":"KommySwimSkin2","atlas":"/l2d/trickcal/Kommy (Swimsuit)/KommySwimSkin2.atlas.asset","skel":"/l2d/trickcal/Kommy (Swimsuit)/KommySwimSkin2.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/kommy-swimsuit.webp"},{"name":"Rim","skin":{"id":"RimSkin3","atlas":"/l2d/trickcal/Rim/RimSkin3.atlas.asset","skel":"/l2d/trickcal/Rim/RimSkin3.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/rim.webp"},{"name":"Belita","skin":{"id":"BelitaSkin3","atlas":"/l2d/trickcal/Belita/BelitaSkin3.atlas.asset","skel":"/l2d/trickcal/Belita/BelitaSkin3.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/belita.webp"},{"name":"Haley","skin":{"id":"HaleySkin3","atlas":"/l2d/trickcal/Haley/HaleySkin3.atlas.asset","skel":"/l2d/trickcal/Haley/HaleySkin3.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/haley.webp"}]},{"id":"night-dresses","name":"Dresses 🥵","characters":[{"name":"Snorky","skin":{"id":"SnorkySkin2","atlas":"/l2d/trickcal/Snorky/SnorkySkin2.atlas.asset","skel":"/l2d/trickcal/Snorky/SnorkySkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/snorky.webp"},{"name":"Picora","skin":{"id":"PicoraSkin3","atlas":"/l2d/trickcal/Picora/PicoraSkin3.atlas.asset","skel":"/l2d/trickcal/Picora/PicoraSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/picora.webp"},{"name":"Selene","skin":{"id":"SellineSkin4","atlas":"/l2d/trickcal/Selene/SellineSkin4.atlas.asset","skel":"/l2d/trickcal/Selene/SellineSkin4.skel.asset","label":"Skin 5"},"icon":"characters/trickcal/selinne.webp"},{"name":"Kyarot","skin":{"id":"KyarotSkin3","atlas":"/l2d/trickcal/Kyarot/KyarotSkin3.atlas.asset","skel":"/l2d/trickcal/Kyarot/KyarotSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/kyarot.webp"},{"name":"Ner","skin":{"id":"NerSkin3","atlas":"/l2d/trickcal/Ner/NerSkin3.atlas.asset","skel":"/l2d/trickcal/Ner/NerSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/ner.webp"}]},{"id":"cheerleaders","name":"Cheerleaders","characters":[{"name":"Naia","skin":{"id":"NaiaSkin3","atlas":"/l2d/trickcal/Naia/NaiaSkin3.atlas.asset","skel":"/l2d/trickcal/Naia/NaiaSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/naia.webp"},{"name":"Velvet","skin":{"id":"VelvetSkin2","atlas":"/l2d/trickcal/Velvet/VelvetSkin2.atlas.asset","skel":"/l2d/trickcal/Velvet/VelvetSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/velvet.webp"},{"name":"Sist","skin":{"id":"SistSkin3","atlas":"/l2d/trickcal/Sist/SistSkin3.atlas.asset","skel":"/l2d/trickcal/Sist/SistSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/sist.webp"},{"name":"Rufo","skin":{"id":"RufoSkin2","atlas":"/l2d/trickcal/Rufo/RufoSkin2.atlas.asset","skel":"/l2d/trickcal/Rufo/RufoSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/rufo.webp"},{"name":"Blanchet","skin":{"id":"BlanchetSkin3","atlas":"/l2d/trickcal/Blanchet/BlanchetSkin3.atlas.asset","skel":"/l2d/trickcal/Blanchet/BlanchetSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/blanchet.webp"}]},{"id":"cosplay","name":"Apostle Cosplays","characters":[{"name":"Asia","skin":{"id":"EisiaSkin3","atlas":"/l2d/trickcal/Asia/EisiaSkin3.atlas.asset","skel":"/l2d/trickcal/Asia/EisiaSkin3.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/asia.webp"},{"name":"Miro","skin":{"id":"MiroSkin2","atlas":"/l2d/trickcal/Miro/MiroSkin2.atlas.asset","skel":"/l2d/trickcal/Miro/MiroSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/miro.webp"},{"name":"Sherum","skin":{"id":"SherumSkin3","atlas":"/l2d/trickcal/Sherum/SherumSkin3.atlas.asset","skel":"/l2d/trickcal/Sherum/SherumSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/sherum.webp"},{"name":"Risty","skin":{"id":"RistySkin3","atlas":"/l2d/trickcal/Risty/RistySkin3.atlas.asset","skel":"/l2d/trickcal/Risty/RistySkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/risty.webp"},{"name":"Rim (Chaos)","skin":{"id":"RimChaosSkin4","atlas":"/l2d/trickcal/Rim (Chaos)/RimChaosSkin4.atlas.asset","skel":"/l2d/trickcal/Rim (Chaos)/RimChaosSkin4.skel.asset","label":"Skin 5"},"icon":"characters/trickcal/rim-chaos.webp"}]},{"id":"flight-attendants","name":"Flight Attendants","characters":[{"name":"Polan","skin":{"id":"PolanSkin3","atlas":"/l2d/trickcal/Polan/PolanSkin3.atlas.asset","skel":"/l2d/trickcal/Polan/PolanSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/polan.webp"},{"name":"Shasha","skin":{"id":"ShashaSkin3","atlas":"/l2d/trickcal/Shasha/ShashaSkin3.atlas.asset","skel":"/l2d/trickcal/Shasha/ShashaSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/shasha.webp"},{"name":"Opal","skin":{"id":"OpalSkin4","atlas":"/l2d/trickcal/Opal/OpalSkin4.atlas.asset","skel":"/l2d/trickcal/Opal/OpalSkin4.skel.asset","label":"Skin 4"},"icon":"characters/trickcal/opal.webp"},{"name":"Ricotta","skin":{"id":"RicotaSkin2","atlas":"/l2d/trickcal/Ricotta/RicotaSkin2.atlas.asset","skel":"/l2d/trickcal/Ricotta/RicotaSkin2.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/ricotta.webp"},{"name":"Shoupan","skin":{"id":"ShoupanSkin3","atlas":"/l2d/trickcal/Shoupan/ShoupanSkin3.atlas.asset","skel":"/l2d/trickcal/Shoupan/ShoupanSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/shoupan.webp"}]},{"id":"casual-date","name":"Casual date","characters":[{"name":"Polan","skin":{"id":"PolanSkin1","atlas":"/l2d/trickcal/Polan/PolanSkin1.atlas.asset","skel":"/l2d/trickcal/Polan/PolanSkin1.skel.asset","label":"Skin 1"},"icon":"characters/trickcal/polan.webp"},{"name":"Momo","skin":{"id":"MomoSkin1","atlas":"/l2d/trickcal/Momo/MomoSkin1.atlas.asset","skel":"/l2d/trickcal/Momo/MomoSkin1.skel.asset","label":"Skin 1"},"icon":"characters/trickcal/momo.webp"},{"name":"Gwynn","skin":{"id":"GuinSkin1","atlas":"/l2d/trickcal/Gwynn/GuinSkin1.atlas.asset","skel":"/l2d/trickcal/Gwynn/GuinSkin1.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/gwynn.webp"},{"name":"Sherum","skin":{"id":"SherumSkin2","atlas":"/l2d/trickcal/Sherum/SherumSkin2.atlas.asset","skel":"/l2d/trickcal/Sherum/SherumSkin2.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/sherum.webp"},{"name":"Leone","skin":{"id":"LionSkin1","atlas":"/l2d/trickcal/Leone/LionSkin1.atlas.asset","skel":"/l2d/trickcal/Leone/LionSkin1.skel.asset","label":"Skin 2"},"icon":"characters/trickcal/leone.webp"}]},{"id":"battle-maids","name":"Battle Maids","characters":[{"name":"Butter","skin":{"id":"ButterSkin3","atlas":"/l2d/trickcal/Butter/ButterSkin3.atlas.asset","skel":"/l2d/trickcal/Butter/ButterSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/butter.webp"},{"name":"Erpin","skin":{"id":"ErpinSkin5","atlas":"/l2d/trickcal/Erpin/ErpinSkin5.atlas.asset","skel":"/l2d/trickcal/Erpin/ErpinSkin5.skel.asset","label":"Skin 5"},"icon":"characters/trickcal/erpin.webp"},{"name":"Kidian","skin":{"id":"KidianSkin4","atlas":"/l2d/trickcal/Kidian/KidianSkin4.atlas.asset","skel":"/l2d/trickcal/Kidian/KidianSkin4.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/kidian.webp"},{"name":"Rollet","skin":{"id":"RollettSkin3","atlas":"/l2d/trickcal/Rollet/RollettSkin3.atlas.asset","skel":"/l2d/trickcal/Rollet/RollettSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/rollet.webp"},{"name":"Fricle","skin":{"id":"FricleSkin3","atlas":"/l2d/trickcal/Fricle/FricleSkin3.atlas.asset","skel":"/l2d/trickcal/Fricle/FricleSkin3.skel.asset","label":"Skin 3"},"icon":"characters/trickcal/fricle.webp"}]}];
+
+  // resolvedPacks is injected by Astro's define:vars as a JS object (no JSON encoding issues)
+  // window.spine is used to access the CDN-loaded Spine global from within this module script
+
+  const PACKS_DATA = resolvedPacks;
+
+  let currentPackIndex = 0;
+  const players = [null, null, null, null, null];
+
+  async function loadSpineLibrary() {
+    if (window.spine) return;
+
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src =
+        "https://unpkg.com/@esotericsoftware/spine-player@4.1/dist/iife/spine-player.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href =
+        "https://unpkg.com/@esotericsoftware/spine-player@4.1/dist/spine-player.css";
+      document.head.appendChild(link);
+    });
+  }
+
+  function disposeAllPlayers() {
+    for (let i = 0; i < 5; i++) {
+      if (players[i]) {
+        try {
+          players[i].dispose();
+        } catch (e) {}
+        players[i] = null;
+      }
+      const container = document.getElementById(`spine-slot-${i}`);
+      if (container) container.innerHTML = "";
+    }
+  }
+
+  function initPlayer(slot, skin) {
+    if (!skin) return;
+
+    const containerId = `spine-slot-${slot}`;
+
+    try {
+      players[slot] = new spine.SpinePlayer(containerId, {
+        skelUrl: skin.skel,
+        atlasUrl: skin.atlas,
+        animation: "Idle_1",
+        premultipliedAlpha: true,
+        backgroundColor: "#00000000",
+        alpha: true,
+        showControls: false,
+        showLoading: true,
+        preserveDrawingBuffer: false,
+        fullScreenBackgroundColor: "#0b0e11",
+        // Fixed viewport so all 5 characters render in the same world-space window,
+        // preserving natural relative proportions instead of each auto-scaling to fill its column.
+        // Adjust x/y/width/height if characters appear cropped or too small.
+        viewport: { x: -200, y: 0, width: 400, height: 750, transitionTime: 0 },
+        success: (player) => {
+          const skeleton = player.skeleton;
+          const skeletonData = skeleton.data;
+          const skins = skeletonData.skins;
+
+          if (skins.length > 1) {
+            const activeSkin =
+              skins.find((s) => s.name !== "default") || skins[0];
+            skeleton.setSkinByName(activeSkin.name);
+            skeleton.setSlotsToSetupPose();
+          } else if (skins.length === 1) {
+            skeleton.setSkinByName(skins[0].name);
+            skeleton.setSlotsToSetupPose();
+          }
+
+          const animations = skeletonData.animations;
+          if (animations.length > 0) {
+            const hasIdle1 = animations.find((a) => a.name === "Idle_1");
+            const animName = hasIdle1
+              ? "Idle_1"
+              : animations.find((a) => a.name.toLowerCase().includes("idle"))
+                  ?.name || animations[0].name;
+            player.setAnimation(animName, true);
+            player.play();
+          }
+        },
+      });
+    } catch (e) {
+      console.error(`Failed to init player slot ${slot}:`, e);
+    }
+  }
+
+  async function loadPack(packIndex) {
+    const pack = PACKS_DATA[packIndex];
+    if (!pack) return;
+
+    currentPackIndex = packIndex;
+    document.getElementById("current-pack-name").textContent = pack.name;
+
+    disposeAllPlayers();
+    await loadSpineLibrary();
+
+    for (let i = 0; i < 5; i++) {
+      const char = pack.characters[i];
+      const nameEl = document.getElementById(`char-name-${i}`);
+      const container = document.getElementById(`spine-slot-${i}`);
+
+      if (char) {
+        if (nameEl) nameEl.textContent = char.name;
+        if (char.skin) initPlayer(i, char.skin);
+      } else {
+        if (nameEl) nameEl.innerHTML = "&nbsp;";
+        if (container) container.innerHTML = "";
+      }
+    }
+
+    document.querySelectorAll(".pack-option").forEach((opt, i) => {
+      opt.classList.toggle("active", i === packIndex);
+    });
+  }
+
+  function populatePacks() {
+    const grid = document.getElementById("packs-grid");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+    PACKS_DATA.forEach((pack, index) => {
+      const opt = document.createElement("div");
+      opt.className = `pack-option${index === currentPackIndex ? " active" : ""}`;
+
+      const preview5 = pack.characters.slice(0, 5);
+      const extra = pack.characters.length - 5;
+
+      const iconsHTML = preview5.map((c) =>
+        c.icon
+          ? `<img loading="lazy" decoding="async" src="/${c.icon}" alt="${c.name}" class="pack-char-icon" title="${c.name}" />`
+          : `<div class="pack-char-initial">${c.name[0]}</div>`
+      ).join("");
+
+      const extraHTML = extra > 0
+        ? `<div class="pack-char-extra">+${extra}</div>`
+        : "";
+
+      opt.innerHTML = `
+        <div class="pack-option-name">${pack.name}</div>
+        <div class="pack-chars-row">${iconsHTML}${extraHTML}</div>
+      `;
+
+      opt.addEventListener("click", () => {
+        loadPack(index, 0);
+        closePopup();
+      });
+
+      grid.appendChild(opt);
+    });
+  }
+
+  function openPopup() {
+    populatePacks();
+    document.getElementById("pack-popup").style.display = "flex";
+    document.body.style.overflow = "hidden";
+  }
+
+  function closePopup() {
+    document.getElementById("pack-popup").style.display = "none";
+    document.body.style.overflow = "";
+  }
+
+  // Anchor the viewer below the nav/timers without hard-coding pixel offsets:
+  // read the initial top position before fixing it in place.
+  function pinViewerToViewport() {
+    const viewer = document.querySelector(".viewer-wrapper");
+    if (!viewer) return;
+    const top = Math.round(viewer.getBoundingClientRect().top + window.scrollY);
+    viewer.style.position = "fixed";
+    viewer.style.top = top + "px";
+    viewer.style.left = "0";
+    viewer.style.right = "0";
+    viewer.style.bottom = "0";
+    viewer.style.zIndex = "50";
+    // Prevent the body from scrolling behind the fixed viewer
+    document.documentElement.style.overflow = "hidden";
+  }
+
+  document.getElementById("switch-pack-btn").addEventListener("click", openPopup);
+  document.getElementById("close-popup-btn").addEventListener("click", closePopup);
+  document.getElementById("pack-popup").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("pack-popup")) closePopup();
+  });
+
+  pinViewerToViewport();
+  loadPack(0);
+})();</script> 

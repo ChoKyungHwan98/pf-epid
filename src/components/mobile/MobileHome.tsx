@@ -126,39 +126,27 @@ export const MobileHome = ({ onTabChange }: Props) => {
           <div>
             <motion.div {...s(1)}>
               <p style={{
-                fontSize: 'clamp(1.1rem, 4.8vw, 1.3rem)',
-                fontWeight: 700,
-                color: '#a1a1aa',
-                letterSpacing: '-0.02em',
-                lineHeight: 1.3,
-                marginBottom: 4,
-                wordBreak: 'keep-all',
-              }}>
-                기획의도를 알고,
-              </p>
-              <p style={{
-                fontSize: 'clamp(2.75rem, 12.5vw, 3.5rem)',
+                fontSize: 'clamp(3rem, 13vw, 3.7rem)',
                 fontWeight: 900,
                 color: '#1A2332',
-                letterSpacing: '-0.046em',
-                lineHeight: 1.02,
+                letterSpacing: '-0.06em',
+                lineHeight: 1.04,
                 margin: 0,
                 wordBreak: 'keep-all',
               }}>
-                목차를 쓸 줄<br />아는 기획자
+                −를 0으로,<br />0을 <span style={{ color: '#0047BB' }}>+</span>로.
               </p>
             </motion.div>
 
-            <motion.div {...s(2)} style={{ marginTop: 16 }}>
+            <motion.div {...s(2)} style={{ marginTop: 22, paddingLeft: 15, borderLeft: '2px solid rgba(0,71,187,0.28)' }}>
               <p style={{
-                fontSize: 13,
+                fontSize: 14,
                 color: '#71717a',
-                lineHeight: 1.6,
-                letterSpacing: '-0.01em',
+                lineHeight: 1.65,
+                letterSpacing: '-0.02em',
                 wordBreak: 'keep-all',
               }}>
-                법학의 논리 구조를 게임 기획에 적용합니다.<br />
-                기획 의도가 흔들리지 않는 뼈대를 설계합니다.
+                누군가의 하루에 즐거움을 더하는<br />게임 기획자가 되고 싶습니다.
               </p>
             </motion.div>
           </div>

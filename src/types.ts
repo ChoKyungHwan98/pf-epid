@@ -16,6 +16,11 @@ export interface Project {
   scenarioGallery?: string[];
   externalUrl?: string;
   hideExternalTab?: boolean;
+  externalTabLabel?: string;
+  openExternalByDefault?: boolean;
+  externalOnly?: boolean;
+  externalCtaLabel?: string;
+  externalCtaNote?: string;
   simulatorUrl?: string;
   simulatorVideoUrl?: string;
   hasSimulator?: boolean;
@@ -29,7 +34,7 @@ export interface Project {
     released: string;
     teamSize: string;
     myRole: string;
-    achievement: string;
+    achievement?: string;
   };
 }
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
 import { AnimeHistoryView } from './components/AnimeHistoryView';
 import { DashboardGameHistoryView } from './components/DashboardGameHistoryView';
 import { DashboardHome } from './components/DashboardHome';
@@ -20,6 +19,13 @@ const normalizeView = (value: string | null): DashboardView => {
   return 'home';
 };
 
+const getProjectIdParam = (params: URLSearchParams) => {
+  const rawProjectId = params.get('project');
+  if (!rawProjectId) return null;
+  const parsedProjectId = Number(rawProjectId);
+  return Number.isFinite(parsedProjectId) ? parsedProjectId : null;
+};
+
 function App() {
   const [view, setView] = useState<DashboardView>(() => {
     if (typeof window === 'undefined') return 'home';
@@ -31,6 +37,12 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     return params.get('view') === 'cover-letter' ? 'cover-letter' : 'resume';
   });
+  const [initialProjectId, setInitialProjectId] = useState<number | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const params = new URLSearchParams(window.location.search);
+    return normalizeView(params.get('view')) === 'portfolio' ? getProjectIdParam(params) : null;
+  });
+  const [portfolioProjectTitle, setPortfolioProjectTitle] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
@@ -39,6 +51,9 @@ function App() {
 
   const isMobile = useIsMobile();
   const isDataLoaded = resumeLoaded && projectsLoaded;
+  const breadcrumbDetail = view === 'portfolio'
+    ? portfolioProjectTitle || projectsData.find(project => project.id === initialProjectId)?.title || null
+    : null;
 
   useEffect(() => {
     if ('scrollRestoration' in history) {
@@ -51,8 +66,11 @@ function App() {
     const handlePopState = () => {
       const params = new URLSearchParams(window.location.search);
       const nextView = normalizeView(params.get('view'));
+      const nextProjectId = nextView === 'portfolio' ? getProjectIdParam(params) : null;
       setView(nextView);
       setResumeTab(params.get('view') === 'cover-letter' ? 'cover-letter' : 'resume');
+      setInitialProjectId(nextProjectId);
+      setPortfolioProjectTitle(null);
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -60,6 +78,8 @@ function App() {
 
   const changeView = (nextView: DashboardView) => {
     setView(nextView);
+    setInitialProjectId(null);
+    setPortfolioProjectTitle(null);
     if (nextView !== 'resume') setResumeTab('resume');
     const url = nextView === 'home' ? window.location.pathname : `?view=${nextView}`;
     window.history.pushState({ view: nextView }, '', url);
@@ -68,9 +88,21 @@ function App() {
 
   const changeResumeTab = (tab: 'resume' | 'cover-letter') => {
     setResumeTab(tab);
+    setInitialProjectId(null);
+    setPortfolioProjectTitle(null);
     if (view !== 'resume') setView('resume');
     const url = tab === 'cover-letter' ? '?view=cover-letter' : '?view=resume';
     window.history.pushState({ view: 'resume', tab }, '', url);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
+  const openPortfolioProject = (projectId: number) => {
+    const projectTitle = projectsData.find(project => project.id === projectId)?.title || null;
+    setView('portfolio');
+    setResumeTab('resume');
+    setInitialProjectId(projectId);
+    setPortfolioProjectTitle(projectTitle);
+    window.history.pushState({ view: 'portfolio', projectId }, '', `?view=portfolio&project=${projectId}`);
     window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
@@ -100,8 +132,9 @@ function App() {
       resumeTab={resumeTab}
       setResumeTab={changeResumeTab}
       onPdfDownload={triggerPdfDownload}
+      breadcrumbDetail={breadcrumbDetail}
     >
-      <AnimatePresence initial={false}>
+      <>
         {view === 'home' && <DashboardHome key="home" onViewChange={changeView} />}
 
         {view === 'resume' && (
@@ -115,6 +148,8 @@ function App() {
             setIsEditing={setIsEditing}
             data={resumeData}
             setData={setResumeData}
+            projects={projectsData}
+            onOpenProject={openPortfolioProject}
             onBack={() => changeView('home')}
             activeTab={resumeTab}
             setActiveTab={changeResumeTab}
@@ -130,37 +165,31 @@ function App() {
             isEditing={isEditing}
             projects={projectsData}
             setProjects={setProjectsData}
+            initialProjectId={initialProjectId}
+            onSelectedProjectChange={setPortfolioProjectTitle}
             setView={changeView}
             onBack={() => changeView('home')}
           />
         )}
 
         {view === 'game-history' && (
-          <motion.div
+          <div
             key="game-history"
             className="dashboard-page-motion dashboard-view-game-history"
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
           >
             <DashboardGameHistoryView />
-          </motion.div>
+          </div>
         )}
 
         {view === 'anime-history' && (
-          <motion.div
+          <div
             key="anime-history"
             className="dashboard-page-motion dashboard-view-anime-history"
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
           >
             <AnimeHistoryView />
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </DashboardShell>
   );
 }

@@ -1,13 +1,12 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { ResumeHeader } from './ResumeHeader';
 import { ResumeExperience } from './ResumeExperience';
 import { ResumeTools } from './ResumeTools';
+import { ResumeWing } from './ResumeWing';
 import { CoverLetter } from './CoverLetter';
-import { EditableText } from './EditableText';
 import { PdfTemplate } from './PdfTemplate';
 import { renderToStaticMarkup } from 'react-dom/server';
-import type { ResumeData } from '../types';
+import type { Project, ResumeData } from '../types';
 
 interface ResumeProps {
   setView: (v: any) => void;
@@ -16,158 +15,47 @@ interface ResumeProps {
   setIsEditing: (v: boolean) => void;
   data: ResumeData;
   setData: (d: ResumeData) => void;
+  projects?: Project[];
+  onOpenProject?: (projectId: number) => void;
   activeTab: 'resume' | 'cover-letter';
   setActiveTab: (tab: 'resume' | 'cover-letter') => void;
   isGeneratingPdf: boolean;
   setIsGeneratingPdf: (v: boolean) => void;
 }
 
-const compactPeriod = (period: string) => {
-  const parts = period.split('-').map(part => part.trim()).filter(Boolean);
-  return parts.length > 1 ? parts[parts.length - 1] : period;
-};
+export const Resume = ({ setView, isEditing, data, setData, projects = [], onOpenProject, activeTab, isGeneratingPdf }: ResumeProps) => {
+  const [activeIntroIndex, setActiveIntroIndex] = React.useState(0);
 
-const ResumeWing = ({
-  data,
-  setData,
-  isEditing,
-  activeTab,
-}: {
-  data: ResumeData;
-  setData: (d: ResumeData) => void;
-  isEditing: boolean;
-  activeTab: 'resume' | 'cover-letter';
-}) => {
-  const introItems = data.selfIntroductions ?? [];
-  const certificates = data.certificates ?? [];
+  const handleIntroNavigate = React.useCallback((index: number) => {
+    const scroller = document.querySelector<HTMLElement>('.resume-dashboard-layout.is-cover-letter .resume-main-column');
+    const target = document.getElementById(`intro-${index}`);
 
-  if (activeTab === 'cover-letter') {
-    return (
-      <aside className="resume-rail dashboard-right-rail os-right-sidebar" aria-label="자기소개 보조 정보">
-        <section className="resume-rail-section">
-          <div className="rail-title right-sidebar-header">
-            <span className="rail-tab rs-tab active">문항 목차</span>
-          </div>
-          <nav className="rail-list right-sidebar-list resume-rail-list">
-            {introItems.map((intro, idx) => (
-              <a key={idx} href={`#intro-${idx}`} className="rail-row rs-row resume-rail-row">
-                <span className={`rail-rank rs-rank mono r${Math.min(idx + 1, 3)}`}>{idx + 1}</span>
-                <span className="rail-info rs-info">
-                  <strong className="rs-name">{intro.navTitle || `문항 ${idx + 1}`}</strong>
-                  <span className="rs-sub">자기소개서</span>
-                </span>
-              </a>
-            ))}
-          </nav>
-        </section>
-      </aside>
-    );
-  }
+    if (!scroller || !target) return;
 
-  return (
-    <aside className="resume-rail dashboard-right-rail os-right-sidebar" aria-label="이력서 보조 정보">
-      <section id="resume-education" className="resume-rail-section scroll-mt-24">
-        <div className="rail-title right-sidebar-header">
-          <span className="rail-tab rs-tab active">학력 및 교육</span>
-        </div>
-        <div className="rail-list right-sidebar-list resume-rail-list">
-          {data.education.map((edu, idx) => (
-            <div key={idx} className="rail-row rs-row resume-rail-row">
-              <div className="rail-info rs-info">
-                <div className="rs-name">
-                  <EditableText
-                    value={edu.title}
-                    onSave={(value) => {
-                      const education = [...data.education];
-                      education[idx] = { ...education[idx], title: value };
-                      setData({ ...data, education });
-                    }}
-                    isEditing={isEditing}
-                  />
-                </div>
-                <div className="rs-sub">
-                  <EditableText
-                    value={edu.period}
-                    onSave={(value) => {
-                      const education = [...data.education];
-                      education[idx] = { ...education[idx], period: value };
-                      setData({ ...data, education });
-                    }}
-                    isEditing={isEditing}
-                  />
-                </div>
-                <div className="resume-rail-detail">
-                  <EditableText
-                    value={edu.description}
-                    onSave={(value) => {
-                      const education = [...data.education];
-                      education[idx] = { ...education[idx], description: value };
-                      setData({ ...data, education });
-                    }}
-                    isEditing={isEditing}
-                    markdown={true}
-                  />
-                </div>
-              </div>
-              <div className="rail-meta rs-stats">
-                <span className="rs-val mono">{compactPeriod(edu.period)}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+    const hasInnerScroll = scroller.scrollHeight > scroller.clientHeight + 1;
+    const targetTop = target.getBoundingClientRect().top
+      - scroller.getBoundingClientRect().top
+      + scroller.scrollTop
+      - 24;
 
-      <section className="resume-rail-section">
-        <div className="rail-title right-sidebar-header">
-          <span className="rail-tab rs-tab active">자격증</span>
-        </div>
-        <div className="rail-list right-sidebar-list resume-rail-list">
-          {certificates.length > 0 ? certificates.map((cert, idx) => (
-            <div key={idx} className="rail-row rs-row resume-rail-row">
-              <div className="rail-info rs-info">
-                <div className="rs-name">
-                  <EditableText
-                    value={cert.name}
-                    onSave={(value) => {
-                      const nextCertificates = [...certificates];
-                      nextCertificates[idx] = { ...nextCertificates[idx], name: value };
-                      setData({ ...data, certificates: nextCertificates });
-                    }}
-                    isEditing={isEditing}
-                  />
-                </div>
-                <div className="rs-sub resume-rail-cert-meta">
-                  {cert.score && (
-                    <span>
-                      점수{' '}
-                      <EditableText
-                        value={cert.score}
-                        onSave={(value) => {
-                          const nextCertificates = [...certificates];
-                          nextCertificates[idx] = { ...nextCertificates[idx], score: value };
-                          setData({ ...data, certificates: nextCertificates });
-                        }}
-                        isEditing={isEditing}
-                      />
-                    </span>
-                  )}
-                  <span>취득 {cert.date}</span>
-                </div>
-              </div>
-              <div className="rail-meta rs-stats">
-                <span className="rs-val mono">{cert.date}</span>
-              </div>
-            </div>
-          )) : (
-            <div className="resume-rail-empty">등록된 자격증 없음</div>
-          )}
-        </div>
-      </section>
-    </aside>
-  );
-};
+    setActiveIntroIndex(index);
 
-export const Resume = ({ setView, onBack, isEditing, data, setData, activeTab, isGeneratingPdf }: ResumeProps) => {
+    window.requestAnimationFrame(() => {
+      if (hasInnerScroll) {
+        scroller.scrollTop = targetTop;
+      } else {
+        target.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (activeTab !== 'cover-letter') return;
+    setActiveIntroIndex(0);
+
+    const scroller = document.querySelector<HTMLElement>('.resume-dashboard-layout.is-cover-letter .resume-main-column');
+    scroller?.scrollTo({ top: 0, behavior: 'auto' });
+  }, [activeTab]);
 
   const handleDownload = () => {
     const htmlString = renderToStaticMarkup(<PdfTemplate data={data} />);
@@ -227,59 +115,51 @@ export const Resume = ({ setView, onBack, isEditing, data, setData, activeTab, i
   }, [activeTab, data]);
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-      className="resume-dashboard-section dashboard-view-resume pt-28 pb-12 md:pb-20 px-4 md:px-8 max-w-[1250px] mx-auto w-full min-h-screen flex flex-col relative">
+    <section className="resume-dashboard-section">
 
       <div className={`resume-dashboard-layout os-content-layout ${activeTab === 'cover-letter' ? 'is-cover-letter' : 'is-resume'}`}>
         <main className="resume-main-column dashboard-main-column os-main-column">
-          <AnimatePresence initial={false}>
-            {activeTab === 'resume' ? (
-              <motion.div
-                key="resume"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                className="resume-paper w-full max-w-[1080px] mx-auto bg-white shadow-[0_40px_120px_rgba(0,0,0,0.1)] border border-black/5 rounded-sm overflow-hidden flex flex-col"
-              >
-                <div id="resume-profile" className="scroll-mt-24">
+          {activeTab === 'resume' ? (
+              <div className="resume-paper w-full max-w-[1080px] mx-auto bg-white shadow-[0_40px_120px_rgba(0,0,0,0.1)] border border-black/5 rounded-sm overflow-hidden flex flex-col">
+                <div id="resume-profile" className="resume-top-grid scroll-mt-24">
                   <ResumeHeader data={data} setData={setData} isEditing={isEditing} isGeneratingPdf={isGeneratingPdf} />
+                  <aside id="resume-tools" className="resume-tools-panel scroll-mt-24">
+                    <ResumeTools data={data} />
+                  </aside>
                 </div>
 
-                <div className="border-t border-black/5">
+                <div className="resume-content-divider border-t border-black/5">
                   <main className="resume-primary-main p-8 lg:p-12 bg-white">
-                    <div className="resume-lower-grid">
-                      <section id="resume-experience" className="resume-experience-panel scroll-mt-24">
-                        <ResumeExperience data={data} setData={setData} isEditing={isEditing} />
-                      </section>
-                      <aside id="resume-tools" className="resume-tools-panel scroll-mt-24">
-                        <ResumeTools data={data} />
-                      </aside>
-                    </div>
+                    <section id="resume-experience" className="resume-experience-panel scroll-mt-24">
+                      <ResumeExperience data={data} setData={setData} isEditing={isEditing} projects={projects} onOpenProject={onOpenProject} />
+                    </section>
                   </main>
                 </div>
-              </motion.div>
+              </div>
             ) : (
-              <motion.div
-                key="cover-letter"
-                initial={{ opacity: 0, scale: 0.99, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 1.01, y: -10 }}
-                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                className="resume-cover-letter-shell"
-              >
-                <CoverLetter setView={setView} isEditing={isEditing} data={data} setData={setData} />
-              </motion.div>
+              <div className="resume-cover-letter-shell">
+                <CoverLetter
+                  setView={setView}
+                  isEditing={isEditing}
+                  data={data}
+                  setData={setData}
+                  activeIndex={activeIntroIndex}
+                  onActiveIndexChange={setActiveIntroIndex}
+                  onNavigateIntro={handleIntroNavigate}
+                />
+              </div>
             )}
-          </AnimatePresence>
         </main>
 
-        <ResumeWing data={data} setData={setData} isEditing={isEditing} activeTab={activeTab} />
+        <ResumeWing
+          data={data}
+          setData={setData}
+          isEditing={isEditing}
+          activeTab={activeTab}
+          activeIntroIndex={activeIntroIndex}
+          onNavigateIntro={handleIntroNavigate}
+        />
       </div>
-    </motion.section>
+    </section>
   );
 };

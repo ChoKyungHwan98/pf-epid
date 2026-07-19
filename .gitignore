@@ -8,3 +8,4 @@ coverage/
 !.env.example
 .claude/
 sync_resume.ts
+.gstack/
