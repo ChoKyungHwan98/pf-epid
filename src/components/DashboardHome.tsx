@@ -10,10 +10,7 @@ interface DashboardHomeProps {
 export const DashboardHome = ({ onViewChange }: DashboardHomeProps) => {
   return (
     <section className="dashboard-home relative overflow-hidden !justify-start lg:!justify-center w-full min-h-[calc(100vh-116px)]">
-      {/* Background ambient glow */}
-      <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#d7cab3]/[0.025] rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-white/[0.015] rounded-full blur-[100px] pointer-events-none" />
-
+      {/* Removed ambient glows per user request to keep background clean */}
       <div className="w-full max-w-[1280px] ml-[-68px] grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10 pl-0">
         
         {/* Left Side: Copy */}
