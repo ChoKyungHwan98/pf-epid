@@ -135,7 +135,7 @@
   min-width: 0;
   padding: 14px 13px 2px;
   color: var(--dash-iron);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   overflow: hidden;
 }
@@ -2815,6 +2815,10 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 900;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.dashboard-shell.sidebar-expanded .dashboard-contact span {
+  font-size: 11px;
 }
 
 .dashboard-shell.sidebar-expanded .dashboard-nav-btn[data-tooltip]:hover::after,
