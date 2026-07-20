@@ -11,7 +11,7 @@ export const DashboardHome = ({ onViewChange }: DashboardHomeProps) => {
   return (
     <section className="dashboard-home relative overflow-hidden !justify-start lg:!justify-center w-full min-h-[calc(100vh-116px)]">
       {/* Removed ambient glows per user request to keep background clean */}
-      <div className="w-full max-w-[1280px] ml-[-68px] grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10 pl-0">
+      <div className="w-full max-w-[1280px] ml-[-68px] grid grid-cols-2 gap-16 items-center relative z-10 pl-0">
         
         {/* Left Side: Copy */}
         <motion.div 
@@ -21,31 +21,31 @@ export const DashboardHome = ({ onViewChange }: DashboardHomeProps) => {
           className="flex flex-col items-start w-full"
         >
           <h1 className="text-left m-0 mb-10 font-black tracking-tighter leading-[1.15] text-white">
-            <div className="flex flex-col gap-5 lg:gap-7">
+            <div className="flex flex-col gap-7">
               <div className="flex items-baseline gap-4">
-                <span className="text-[#e07070] font-black text-7xl lg:text-9xl drop-shadow-[0_0_24px_rgba(224,112,112,0.35)]">−</span>
-                <span className="text-[#a1a1aa] font-extrabold text-6xl lg:text-8xl pr-3 lg:pr-5">를</span>
-                <span className="text-gray-400 font-black text-7xl lg:text-9xl drop-shadow-[0_0_20px_rgba(156,163,175,0.3)]">0</span>
-                <span className="text-[#a1a1aa] font-extrabold text-6xl lg:text-8xl">으로,</span>
+                <span className="text-[#e07070] font-black text-9xl drop-shadow-[0_0_24px_rgba(224,112,112,0.35)]">−</span>
+                <span className="text-[#a1a1aa] font-extrabold text-8xl pr-5">를</span>
+                <span className="text-gray-400 font-black text-9xl drop-shadow-[0_0_20px_rgba(156,163,175,0.3)]">0</span>
+                <span className="text-[#a1a1aa] font-extrabold text-8xl">으로,</span>
               </div>
               <div className="flex items-baseline gap-4">
-                <span className="text-gray-400 font-black text-7xl lg:text-9xl drop-shadow-[0_0_20px_rgba(156,163,175,0.3)]">0</span>
-                <span className="text-[#a1a1aa] font-extrabold text-6xl lg:text-8xl pr-3 lg:pr-5">을</span>
-                <span className="text-blue-500 font-black text-7xl lg:text-9xl drop-shadow-[0_0_20px_rgba(59,130,246,0.4)]">+</span>
-                <span className="text-[#a1a1aa] font-extrabold text-6xl lg:text-8xl">로.</span>
+                <span className="text-gray-400 font-black text-9xl drop-shadow-[0_0_20px_rgba(156,163,175,0.3)]">0</span>
+                <span className="text-[#a1a1aa] font-extrabold text-8xl pr-5">을</span>
+                <span className="text-blue-500 font-black text-9xl drop-shadow-[0_0_20px_rgba(59,130,246,0.4)]">+</span>
+                <span className="text-[#a1a1aa] font-extrabold text-8xl">로.</span>
               </div>
             </div>
           </h1>
 
-          <p className="text-[#f4f3ee] text-3xl lg:text-4xl font-bold max-w-[800px] leading-[1.7] mb-12 tracking-tight opacity-90 drop-shadow-md">
-            누군가의 어려움을 외면하지 않고,<br className="hidden sm:block" />
+          <p className="text-[#f4f3ee] text-4xl font-bold max-w-[800px] leading-[1.7] mb-12 tracking-tight opacity-90 drop-shadow-md">
+            누군가의 어려움을 외면하지 않고,<br className="block" />
             누군가의 하루에 즐거움을 더하는 게임 기획자가 되고싶습니다.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-5 w-full sm:w-auto">
+          <div className="flex flex-row items-center gap-5 w-auto">
             <button 
               type="button" 
-              className="group relative px-10 py-5 bg-[#f4f3ee] text-[#15171b] font-black text-lg lg:text-xl rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(244,243,238,0.15)] transition-all hover:scale-[1.03] hover:shadow-[0_0_40px_rgba(244,243,238,0.25)]"
+              className="group relative px-10 py-5 bg-[#f4f3ee] text-[#15171b] font-black text-xl rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(244,243,238,0.15)] transition-all hover:scale-[1.03] hover:shadow-[0_0_40px_rgba(244,243,238,0.25)]"
               onClick={() => onViewChange('resume')}
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
@@ -56,7 +56,7 @@ export const DashboardHome = ({ onViewChange }: DashboardHomeProps) => {
 
             <button 
               type="button" 
-              className="px-10 py-5 border-[1.5px] border-[rgba(244,243,238,0.2)] text-[#d4d4d8] font-bold text-lg lg:text-xl rounded-2xl hover:bg-[rgba(244,243,238,0.06)] hover:text-[#f4f3ee] hover:border-[rgba(244,243,238,0.3)] transition-all flex justify-center items-center"
+              className="px-10 py-5 border-[1.5px] border-[rgba(244,243,238,0.2)] text-[#d4d4d8] font-bold text-xl rounded-2xl hover:bg-[rgba(244,243,238,0.06)] hover:text-[#f4f3ee] hover:border-[rgba(244,243,238,0.3)] transition-all flex justify-center items-center"
               onClick={() => onViewChange('portfolio')}
             >
               포트폴리오
@@ -204,7 +204,7 @@ const SpineCharacter = () => {
 
   return (
     <div 
-      className="w-full max-w-[900px] h-[75vh] min-h-[700px] relative z-10 scale-[1.15] origin-bottom lg:scale-[1.25] lg:origin-center translate-y-8 lg:translate-y-16"
+      className="w-full max-w-[900px] h-[75vh] min-h-[700px] relative z-10 scale-[1.25] origin-center translate-y-16"
     >
       {/* Click target slightly expanded to ensure reliability */}
       <div 
