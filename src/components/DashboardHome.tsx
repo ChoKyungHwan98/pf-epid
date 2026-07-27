@@ -186,27 +186,83 @@ const SpineCharacter = () => {
     );
   }
 
-  const handleCharacterClick = () => {
-    if (!playerRef.current?.animationState || !playerRef.current?.skeleton) return;
-    
-    try {
-      const animState = playerRef.current.animationState;
-      const skeleton = playerRef.current.skeleton;
+  const HIT_TEXTS = ["꿀밤! 💥"];
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [hitEffects, setHitEffects] = React.useState<{ id: number; x: number; y: number; text: string }[]>([]);
+  const [hitCount, setHitCount] = React.useState(0);
 
-      animState.clearTracks();
-      skeleton.setToSetupPose();
-      animState.setAnimation(0, 'Smash_End_1', false);
-      animState.addAnimation(0, 'Idle_1', true, 0);
-    } catch (e: any) {
-      console.error("Spine click error:", e);
+  const handleCharacterClick = (e?: React.MouseEvent<HTMLDivElement>) => {
+    if (playerRef.current?.animationState && playerRef.current?.skeleton) {
+      try {
+        const animState = playerRef.current.animationState;
+        const skeleton = playerRef.current.skeleton;
+
+        animState.clearTracks();
+        skeleton.setToSetupPose();
+        animState.setAnimation(0, 'Smash_End_1', false);
+        animState.addAnimation(0, 'Idle_1', true, 0);
+      } catch (err: any) {
+        console.error("Spine click error:", err);
+      }
     }
+
+    // Spawn floating hit FX
+    let clickX = 90;
+    let clickY = 40;
+    if (e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      clickX = e.clientX - rect.left;
+      clickY = e.clientY - rect.top;
+    }
+
+    const randomText = HIT_TEXTS[Math.floor(Math.random() * HIT_TEXTS.length)];
+    const newHit = {
+      id: Date.now() + Math.random(),
+      x: clickX,
+      y: clickY,
+      text: randomText,
+    };
+
+    setHitCount((prev) => prev + 1);
+    setHitEffects((prev) => [...prev.slice(-4), newHit]);
   };
+
+  React.useEffect(() => {
+    if (hitEffects.length > 0) {
+      const timer = setTimeout(() => {
+        setHitEffects((prev) => prev.slice(1));
+      }, 900);
+      return () => clearTimeout(timer);
+    }
+  }, [hitEffects]);
 
   return (
     <div 
-      className="w-full max-w-[900px] h-[75vh] min-h-[700px] relative z-10 scale-[1.25] origin-center translate-y-16"
+      className="w-full max-w-[900px] h-[75vh] min-h-[700px] relative z-10 scale-[1.25] origin-center translate-y-16 group"
     >
-      {/* Click target slightly expanded to ensure reliability */}
+      {/* Floating Click Indicator Badge (Dashboard Tone & Manner Matched) */}
+      <div 
+        className="absolute z-40 pointer-events-none select-none transition-all duration-300"
+        style={{ 
+          top: '7%', 
+          left: '30%',
+          transform: isHovered ? 'translateY(-4px) scale(1.05)' : 'translateY(0px) scale(1)',
+        }}
+      >
+        <div className="relative flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#16191e]/90 border border-[rgba(244,243,238,0.14)] text-[#f4f3ee] shadow-[0_12px_28px_rgba(0,0,0,0.45)] backdrop-blur-md animate-bounce">
+          <span className="text-base animate-pulse">👇</span>
+          <span className="text-xs font-bold tracking-tight text-[#f4f3ee]">
+            머리 콕! <span className="text-[#e07070] font-extrabold">(꿀밤 때리기)</span>
+          </span>
+          {hitCount > 0 && (
+            <span className="ml-0.5 px-2 py-0.5 text-[11px] font-mono font-black rounded-full bg-[#e07070]/20 border border-[#e07070]/40 text-[#e07070]">
+              x{hitCount}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Original Click Target Zone (Exact original hit box, untouched dimensions) */}
       <div 
         className="absolute z-50 cursor-pointer rounded-full" 
         style={{ 
@@ -218,9 +274,25 @@ const SpineCharacter = () => {
           left: '20%',
           transform: 'none'
         }} 
-        onClick={handleCharacterClick}
-      />
-      
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={(e) => handleCharacterClick(e)}
+      >
+        {/* Dynamic Floating Hit Text FX (Tone & Manner Matched) */}
+        {hitEffects.map((hit) => (
+          <motion.div
+            key={hit.id}
+            initial={{ opacity: 1, y: 0, scale: 0.85 }}
+            animate={{ opacity: 0, y: -40, scale: 1.15 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="absolute pointer-events-none font-black text-xs text-[#f4f3ee] bg-[#16191e]/95 border border-[#e07070]/50 px-3 py-1 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.5)] backdrop-blur-md whitespace-nowrap z-50 flex items-center gap-1.5"
+            style={{ left: hit.x - 15, top: hit.y - 25 }}
+          >
+            <span className="text-[#f4f3ee] font-extrabold">{hit.text}</span>
+          </motion.div>
+        ))}
+      </div>
+
       <div
         id={CONTAINER_ID}
         className="w-full h-full relative pointer-events-none"
@@ -233,3 +305,4 @@ const SpineCharacter = () => {
     </div>
   );
 };
+
